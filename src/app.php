@@ -17,6 +17,11 @@ $app['src_dir'] = $app['root_dir'].'src/';
 $config = $app['root_dir'].'app/config/config.yml';
 \Model\Configuration::setup($app, $config);
 
+/* Twig */
+$app->register(new \Silex\Provider\TwigServiceProvider(), [
+    'twig.path' => $app['root_dir'].'resources/views'
+]);
+
 /* Input endpoints map */
 $inputMap = $app['root_dir'].'app/config/input_map.yml';
 if (!file_exists($inputMap)) {

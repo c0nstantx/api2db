@@ -9,6 +9,7 @@
  */
 namespace Controller;
 use Model\GraphOutputData;
+use Silex\Application;
 use Symfony\Component\HttpFoundation\Response;
 
 /**
@@ -18,7 +19,12 @@ use Symfony\Component\HttpFoundation\Response;
  */
 class DefaultController
 {
-    public function mainAction(\Silex\Application $app)
+    public function mainAction(Application $app)
+    {
+        return $app['twig']->render('index.html.twig');
+    }
+
+    public function testAction(Application $app)
     {
         $outputService = $app['output_service'];
 
