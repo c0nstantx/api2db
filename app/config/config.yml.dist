@@ -1,0 +1,29 @@
+input:
+    twitter:
+        credentials:
+            identifier:     id
+            secret:         secret
+            client_key:     client_key
+            client_secret:  client_secret
+    instagram:
+        credentials:
+            identifier:     id
+            secret:         secret
+            access_token:   token
+    facebook:
+        credentials:
+            identifier:     id
+            secret:         secret
+            access_token:   token
+output:
+    jena:
+        host: jena_host
+        port: 3030
+    neo4j:
+        host: neo_host
+        port: 7474
+relations:
+    - 'HAS'
+    - 'BELONGS_TO'
+    - 'CREATED_AT'
+    - 'IS'

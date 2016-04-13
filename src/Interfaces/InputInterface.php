@@ -1,0 +1,36 @@
+<?php
+/**
+ * (c) Konstantine Christofilos <kostas.christofilos@gmail.com>
+ *
+ * For the full copyright and license information, please view the
+ * LICENSE file that was distributed with this source code.
+ *
+ * Thanks :)
+ */
+namespace Interfaces;
+
+/**
+ * Description of InputInterface
+ *
+ * @author Konstantine Christofilos <kostas.christofilos@gmail.com>
+ */
+interface InputInterface
+{
+    /**
+     * InputInterface constructor.
+     * 
+     * @param array $credentials
+     */
+    public function __construct(array $credentials);
+
+    /**
+     * Get a response from input
+     * 
+     * @param string $url
+     * @param array $options
+     * @param array $headers
+     * 
+     * @return mixed
+     */
+    public function get($url, array $options, array $headers);
+}

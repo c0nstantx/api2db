@@ -1,0 +1,25 @@
+{
+    "name": "api2db",
+    "description": "API to Database",
+    "keywords": ["neo4j", "rdf", "triples", "jena", "fuseki", "graph"],
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Konstantinos Christofilos",
+            "email": "kostas.christofilos@gmail.com"
+        }
+    ],
+    "require": {
+        "php": ">=5.6.0",
+        "silex/silex": "^1.3",
+        "league/oauth2-client": "~1.0",
+        "league/oauth1-client": "~1.0",
+        "symfony/yaml": "^2.7",
+        "symfony/console": "^3.0",
+        "graphaware/neo4j-php-client": "^3.3",
+        "twig/twig": "^1.24"
+    },
+    "autoload": {
+        "psr-4": { "": "src" }
+    }
+}
