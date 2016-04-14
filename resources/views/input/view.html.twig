@@ -1,0 +1,102 @@
+{% extends 'layouts/layout.html.twig' %}
+
+{% block body %}
+    {% if driver %}
+        <h3>Edit {{ driver }}</h3>
+        <form method="post" action="{{ path('input_update', {'driver': driver}) }}" data-abide>
+    {% else %}
+        {% set input = {'name': '', 'oauth_type': '0', 'credentials': {'identifier': '', 'secret': '', 'client_key': '', 'client_secret': '', 'access_token': ''}}%}
+        <h3>Create new Input</h3>
+        <form method="post" action="{{ path('input_create') }}" data-abide>
+    {% endif %}
+        <div class="grid-block">
+            <div class="small-12 medium-6 grid-content">
+                <label{% if 'input_id' in errors %} class="is-invalid-label"{% endif %}>Input ID:</label>
+                <select name="input_id">
+                    <option value="">Select type</option>
+                    {% for available_input in available_inputs %}
+                        <option value="{{ available_input }}"{% if app.request.get('input_id') == available_input or driver == available_input%} selected="selected"{% endif %}>{{ available_input }}</option>
+                    {% endfor %}
+                </select>
+                {% if 'input_id' in errors %}
+                    <span class="form-error is-visible" id="uuid">This field is required.</span>
+                {% endif %}
+            </div>
+            <div class="small-12 medium-6 grid-content">
+                <label{% if 'input_name' in errors %} class="is-invalid-label"{% endif %}>Input name:
+                    <input{% if 'input_name' in errors %} class="is-invalid-input"{% endif %} type="text" name="input_name" placeholder="Enter input name (ex. Twitter)" value="{{ app.request.get('input_name', input.name) }}">
+                </label>
+                {% if 'input_name' in errors %}
+                    <span class="form-error is-visible" id="uuid">This field is required.</span>
+                {% endif %}
+            </div>
+            <div class="small-12 medium-6 grid-content">
+                <label{% if 'oauth_type' in errors %} class="is-invalid-label"{% endif %}>Select OAuth type:</label>
+                <select name="oauth_type" id="oauth-selector">
+                    <option value="">Select type</option>
+                    <option value="1"{% if app.request.get('oauth_type') == '1' or input.oauth_type == '1'%} selected="selected"{% endif %}>OAuth1</option>
+                    <option value="2"{% if app.request.get('oauth_type') == '2' or input.oauth_type == '2' %} selected="selected"{% endif %}>OAuth2</option>
+                </select>
+                {% if 'oauth_type' in errors %}
+                    <span class="form-error is-visible" id="uuid">You have to select an OAuth type.</span>
+                {% endif %}
+            </div>
+            <div id="oauth1" class="input-meta small-12 medium-6 grid-content"{% if app.request.get('oauth_type') == '1' or input.oauth_type == '1' %} style="display: block;"{% endif %}>
+                <label{% if 'input_identifier' in errors %} class="is-invalid-label"{% endif %}>Identifier (App ID):
+                    {% if input.oauth_type == '1' %}
+                        <input{% if 'input_identifier' in errors %} class="is-invalid-input"{% endif %} type="text" name="input_identifier" placeholder="Enter application ID" value="{{ app.request.get('input_identifier', input.credentials.identifier) }}" />
+                    {% else %}
+                        <input{% if 'input_identifier' in errors %} class="is-invalid-input"{% endif %} type="text" name="input_identifier" placeholder="Enter application ID" value="{{ app.request.get('input_identifier') }}" />
+                    {% endif %}
+                </label>
+                {% if 'input_identifier' in errors %}
+                    <span class="form-error is-visible" id="uuid">This field is required.</span>
+                {% endif %}
+                <label{% if 'input_secret' in errors %} class="is-invalid-label"{% endif %}>Secret (App Secret):
+                    {% if input.oauth_type == '1' %}
+                        <input{% if 'input_secret' in errors %} class="is-invalid-input"{% endif %} type="text" name="input_secret" placeholder="Enter application secret" value="{{ app.request.get('input_secret', input.credentials.secret) }}"/>
+                    {% else %}
+                        <input{% if 'input_secret' in errors %} class="is-invalid-input"{% endif %} type="text" name="input_secret" placeholder="Enter application secret" value="{{ app.request.get('input_secret') }}"/>
+                    {% endif %}
+                </label>
+                {% if 'input_secret' in errors %}
+                    <span class="form-error is-visible" id="uuid">This field is required.</span>
+                {% endif %}
+                <label{% if 'input_token1' in errors %} class="is-invalid-label"{% endif %}>Access Token:
+                    {% if input.oauth_type == '1' %}
+                        <input{% if 'input_token1' in errors %} class="is-invalid-input"{% endif %} type="text" name="input_token1" placeholder="Enter access token" value="{{ app.request.get('input_token1', input.credentials.client_key) }}"/>
+                    {% else %}
+                        <input{% if 'input_token1' in errors %} class="is-invalid-input"{% endif %} type="text" name="input_token1" placeholder="Enter access token" value="{{ app.request.get('input_token1') }}"/>
+                    {% endif %}
+                </label>
+                {% if 'input_token' in errors %}
+                    <span class="form-error is-visible" id="uuid">This field is required.</span>
+                {% endif %}
+                <label{% if 'input_token_secret' in errors %} class="is-invalid-label"{% endif %}>Access Token Secret:
+                    {% if input.oauth_type == '1' %}
+                        <input{% if 'input_token_secret' in errors %} class="is-invalid-input"{% endif %} type="text" name="input_token_secret" placeholder="Enter access token secret" value="{{ app.request.get('input_token_secret', input.credentials.client_secret) }}"/>
+                    {% else %}
+                        <input{% if 'input_token_secret' in errors %} class="is-invalid-input"{% endif %} type="text" name="input_token_secret" placeholder="Enter access token secret" value="{{ app.request.get('input_token_secret') }}"/>
+                    {% endif %}
+                </label>
+                {% if 'input_token_secret' in errors %}
+                    <span class="form-error is-visible" id="uuid">This field is required.</span>
+                {% endif %}
+                <input type="submit" class="button" value="{% if driver %}Update{% else %}Create{% endif %}" />
+            </div>
+            <div id="oauth2" class="input-meta small-12 medium-6 grid-content"{% if app.request.get('oauth_type') == '2' or input.oauth_type == '2' %} style="display: block;"{% endif %}>
+                <label{% if 'input_token' in errors %} class="is-invalid-label"{% endif %}>Access Token:
+                    {% if input.oauth_type == '2' %}
+                        <input{% if 'input_token' in errors %} class="is-invalid-input"{% endif %} type="text" name="input_token" placeholder="Enter access token" value="{{ app.request.get('input_token', input.credentials.access_token) }}"/>
+                    {% else %}
+                        <input{% if 'input_token' in errors %} class="is-invalid-input"{% endif %} type="text" name="input_token" placeholder="Enter access token" value="{{ app.request.get('input_token') }}"/>
+                    {% endif %}
+                </label>
+                {% if 'input_token' in errors %}
+                    <span class="form-error is-visible" id="uuid">This field is required.</span>
+                {% endif %}
+                <input type="submit" class="button" value="{% if driver %}Update{% else %}Create{% endif %}" />
+            </div>
+        </div>
+    </form>
+{% endblock %}

@@ -1,11 +1,63 @@
 <!DOCTYPE html>
-<html lang="en">
+<html class="no-js" lang="en" dir="ltr">
 <head>
-    <meta charset="UTF-8">
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Welcome to apiDBio</title>
+    <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico">
+    <link rel="stylesheet" href="/css/foundation.min.css">
+    <link rel="stylesheet" href="/css/font-awesome.min.css">
+    <link rel="stylesheet" href="/css/styles.css">
     <title>api2DB Importer</title>
 </head>
 <body>
-{% block body %}
-{% endblock %}
+<div class="off-canvas-wrapper">
+    <div class="off-canvas-wrapper-inner" data-off-canvas-wrapper>
+        <div class="off-canvas position-left reveal-for-large" id="my-info" data-off-canvas data-position="left">
+            <div class="row column" id="header-banner">
+                <h5 class="text-center"><strong>api2DB</strong></h5>
+                <a href="{{ path('homepage') }}"><img class="logo" src="/images/api2db.svg"></a>
+                <h5>Inputs <a href="{{ path('inputs') }}">(Edit)</a></h5>
+                <ul class="settings-list">
+                    {% for driver, input in inputs %}
+                        <li><a href="{{ path('input_view_existing', {'driver': driver}) }}">{{ input.name }}</a></li>
+                    {% endfor %}
+                </ul>
+                <h5>Outputs <a href="{{ path('outputs') }}">(Edit)</a></h5>
+                <ul class="settings-list">
+                    {% for driver, output in outputs %}
+                        <li><a href="{{ path('output_view', {'driver': driver}) }}">{{ output.name }}</a></li>
+                    {% endfor %}
+                </ul>
+                <h5>Relations <a href="{{ path('relations') }}">(Edit)</a></h5>
+                <ul class="settings-list">
+                    {% for relation in relations %}
+                        <li>{{ relation }}</li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+        <div class="off-canvas-content" data-off-canvas-content>
+            <div class="callout primary">
+                <div class="row column">
+                    <h1>Welcome to api2DB I/O :)</h1>
+                    <p class="lead">api2DB is the implementation of my Msc thesis on Big Data and its scope is to migrate API responses (semi-structured data) structured data (RDF, Graph DB, NoSQL, SQL etc.).<br>The final result will be a unified environment in which we can query these semi-structured data.</p>
+                </div>
+            </div>
+            <div class="row small-up-2 medium-up-3 large-up-4">
+                <div id="body-content">
+                    {% block body %}
+                    {% endblock %}
+                </div>
+                <div class="clearfix"></div>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="/js/jquery.js"></script>
+<script src="/js/what-input.js"></script>
+<script src="/js/foundation.min.js"></script>
+<script src="/js/scripts.js"></script>
 </body>
 </html>

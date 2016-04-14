@@ -1,0 +1,14 @@
+{% extends 'layouts/layout.html.twig' %}
+
+{% block body %}
+    {% if inputs|length %}
+        <ul>
+            {% for driver, input in inputs %}
+                <li>{{ input.name }} <a href="{{ path('input_delete', {'driver': driver}) }}" data-name="{{ input.name }}" class="delete-io"><i class="fa fa-trash" aria-hidden="true"></i></a></li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <h2>No inputs defined</h2>
+    {% endif %}
+    <a href="{{ path('input_create') }}">+ Add Input</a>
+{% endblock %}

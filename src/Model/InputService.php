@@ -12,6 +12,7 @@ use Exception\InputNotDefinedException;
 use Exception\InputNotFoundException;
 use Interfaces\InputInterface;
 use Interfaces\StorageInterface;
+use Symfony\Component\HttpFoundation\Request;
 
 /**
  * Description of InputService
@@ -48,6 +49,14 @@ class InputService
         $this->storage = $storage;
     }
 
+    /**
+     * @return array
+     */
+    public function getAvailableInputs()
+    {
+        return array_keys(self::$inputMap);
+    }
+    
     /**
      * @param string $name
      * 
@@ -92,6 +101,72 @@ class InputService
     public function updateInputMap($input, array $map)
     {
         $this->storage->save($map, $input);
+    }
+
+    /**
+     * @param Request $request
+     *
+     * @return array
+     */
+    public function validate(Request $request)
+    {
+        $required = [
+            'input_id',
+            'input_name',
+            'oauth_type',
+        ];
+        $oauth1 = [
+            'input_identifier',
+            'input_secret',
+            'input_token1',
+            'input_token_secret'
+        ];
+        $oauth2 = [
+            'input_token'
+        ];
+
+        $errors = [];
+
+        if ($request->get('oauth_type') === '1') {
+            $required = array_merge($required, $oauth1);
+        } else if ($request->get('oauth_type') === '2') {
+            $required = array_merge($required, $oauth2);
+        }
+
+        foreach($required as $req) {
+            if (!$request->get($req) || $request->get($req) === '') {
+                $errors[] = $req;
+            }
+        }
+
+        return $errors;
+    }
+
+    /**
+     * @param Request $request
+     * 
+     * @return array
+     */
+    public function getDataFromRequest(Request $request)
+    {
+        if ($request->get('oauth_type') === '1') {
+            $credentials = [
+                'identifier' => $request->get('input_identifier'),
+                'secret' => $request->get('input_secret'),
+                'client_key' => $request->get('input_token1'),
+                'client_secret' => $request->get('input_token_secret')
+            ];
+        } else {
+            $credentials = [
+                'access_token' => $request->get('input_token')
+            ];
+        }
+
+        return [
+            'name' => $request->get('input_name'),
+            'oauth_type' => $request->get('oauth_type'),
+            'credentials' => $credentials
+        ];
     }
     
     /**

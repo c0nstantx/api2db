@@ -14,13 +14,23 @@ $app['root_dir'] = __DIR__.'/../';
 $app['src_dir'] = $app['root_dir'].'src/';
 
 /* Application configuration */
-$config = $app['root_dir'].'app/config/config.yml';
-\Model\Configuration::setup($app, $config);
+$configFile = $app['root_dir'].'app/config/config.yml';
+$app['configuration'] = new \Model\Configuration($app, $configFile);
 
 /* Twig */
+$app->register(new \Silex\Provider\UrlGeneratorServiceProvider());
 $app->register(new \Silex\Provider\TwigServiceProvider(), [
     'twig.path' => $app['root_dir'].'resources/views'
 ]);
+$app->extend('twig', function($twig, $app) {
+    $twig->addGlobal('inputs', $app['inputs']);
+    $twig->addGlobal('outputs', $app['outputs']);
+    $twig->addGlobal('relations', $app['relations']);
+    $twig->addGlobal('available_inputs', $app['input_service']->getAvailableInputs());
+    $twig->addGlobal('available_outputs', $app['input_service']->getAvailableInputs());
+    
+    return $twig;
+});
 
 /* Input endpoints map */
 $inputMap = $app['root_dir'].'app/config/input_map.yml';
@@ -30,14 +40,14 @@ if (!file_exists($inputMap)) {
 
 /* Input service */
 $storage = new \Model\YmlStorage($inputMap);
-$inputService = new \Model\InputService($app['input'], $storage);
+$inputService = new \Model\InputService($app['inputs'], $storage);
 $app['input_service'] = $inputService;
 
 /* Output service */
-$outputService = new \Model\OutputService($app['output']);
+$outputService = new \Model\OutputService($app['outputs']);
 $app['output_service'] = $outputService;
 
-$app->get('/', 'Controller\\DefaultController::mainAction');
-$app->get('/{path}', 'Controller\\DefaultController::{path}Action');
+$app['router'] = new \Model\Router($app);
+$app['router']->setupRoutes();
 
 return $app;

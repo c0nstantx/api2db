@@ -1,0 +1,14 @@
+#body-content {
+    padding: 0 2%;
+}
+
+.frontpage-intro .callout {
+    height: 356px;
+}
+.frontpage-intro .callout img {
+    height:130px;
+    width: 100%;
+}
+.input-meta {
+    display: none;
+}
