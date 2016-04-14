@@ -32,7 +32,7 @@ class ScriptHandler
             $distKeys = array_keys($distConfig);
             $config = [];
             foreach($distKeys as $key) {
-                $config[$key] = null;
+                $config[$key] = [];
             }
 
             file_put_contents($configFile, Yaml::dump($config));

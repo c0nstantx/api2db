@@ -1,4 +1,4 @@
-input:
+inputs:
     twitter:
         credentials:
             identifier:     id
@@ -15,7 +15,7 @@ input:
             identifier:     id
             secret:         secret
             access_token:   token
-output:
+outputs:
     jena:
         host: jena_host
         port: 3030
