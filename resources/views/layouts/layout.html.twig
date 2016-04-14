@@ -24,10 +24,10 @@
                         <li><a href="{{ path('input_view_existing', {'driver': driver}) }}">{{ input.name }}</a></li>
                     {% endfor %}
                 </ul>
-                <h5>Outputs <a href="{{ path('outputs') }}">(Edit)</a></h5>
+                <h5>Outputs</h5>
                 <ul class="settings-list">
                     {% for driver, output in outputs %}
-                        <li><a href="{{ path('output_view', {'driver': driver}) }}">{{ output.name }}</a></li>
+                        <li>{{ output.name }}</li>
                     {% endfor %}
                 </ul>
                 <h5>Relations <a href="{{ path('relations') }}">(Edit)</a></h5>

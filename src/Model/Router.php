@@ -68,10 +68,16 @@ class Router
             ->bind('output_delete');
 
         /* Relations */
-        $this->app->get('/settings/relation', 'Controller\\DefaultController::settingsRelationAction')
-            ->bind('relation_settings');
-        
         $this->app->get('/relations', 'Controller\\DefaultController::relationsAction')
             ->bind('relations');
+        
+        $this->app->get('/relation', 'Controller\\DefaultController::viewRelationAction')
+            ->bind('relation_view');
+        
+        $this->app->post('/relation', 'Controller\\DefaultController::createRelationAction')
+            ->bind('relation_create');
+        
+        $this->app->delete('/relation/{relation}', 'Controller\\DefaultController::deleteRelationAction')
+            ->bind('relation_delete');
     }
 }

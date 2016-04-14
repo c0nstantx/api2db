@@ -48,7 +48,7 @@ class Configuration
     {
         if (isset($this->config['inputs'][$driver])) {
             unset($this->config['inputs'][$driver]);
-            file_put_contents($this->configFile, Yaml::dump($this->config, 4));
+            $this->saveConfig();
         }
 
         return $this;
@@ -68,6 +68,40 @@ class Configuration
         return $this;
     }
 
+    /**
+     * @param string $relation
+     *
+     * @return Configuration
+     */
+    public function deleteRelation($relation)
+    {
+        $key = array_search($relation, $this->config['relations']);
+        if ($key !== false) {
+            unset($this->config['relations'][$key]);
+            $this->saveConfig();
+        }
+
+        return $this;
+    }
+
+    /**
+     * @param string $relation
+     *
+     * @return Configuration
+     */
+    public function addRelation($relation)
+    {
+        if (!in_array($relation, $this->config['relations'])) {
+            $this->config['relations'][] = $relation;
+            $this->saveConfig();
+        }
+
+        return $this;
+    }
+
+    /**
+     * Setup configuration
+     */
     protected function setup()
     {
         $configData = file_get_contents($this->configFile);
@@ -78,5 +112,13 @@ class Configuration
                 $this->app[$key] = $values;
             }
         }
+    }
+
+    /**
+     * Save configuration to file
+     */
+    protected function saveConfig()
+    {
+        file_put_contents($this->configFile, Yaml::dump($this->config, 4));
     }
 }

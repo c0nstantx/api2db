@@ -1,0 +1,14 @@
+{% extends 'layouts/layout.html.twig' %}
+
+{% block body %}
+    {% if relations|length %}
+        <ul>
+            {% for relation in relations %}
+                <li>{{ relation }} <a href="{{ path('relation_delete', {'relation': relation}) }}" data-name="{{ relation }}" class="delete-io"><i class="fa fa-trash" aria-hidden="true"></i></a></li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <h2>No inputs defined</h2>
+    {% endif %}
+    <a href="{{ path('relation_create') }}">+ Add Relation</a>
+{% endblock %}

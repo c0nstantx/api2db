@@ -1,0 +1,18 @@
+{% extends 'layouts/layout.html.twig' %}
+
+{% block body %}
+    <h3>Create new Relation</h3>
+    <form method="post" action="{{ path('relation_create') }}" data-abide>
+    <div class="grid-block">
+        <div class="small-12 medium-6 grid-content">
+            <label{% if 'relation' in errors %} class="is-invalid-label"{% endif %}>Relation:
+                <input{% if 'relation' in errors %} class="is-invalid-input"{% endif %} type="text" name="relation" placeholder="Enter relation (ex. HAS, BELONGS_TO etc.)" value="{{ app.request.get('relation') }}">
+            </label>
+            {% if 'relation' in errors %}
+                <span class="form-error is-visible" id="uuid">This field is required.</span>
+            {% endif %}
+            <input type="submit" class="button" value="Create" />
+        </div>
+    </div>
+    </form>
+{% endblock %}
