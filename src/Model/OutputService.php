@@ -21,6 +21,8 @@ class OutputService
 {
     const OUTPUT_NAMESPACE = '\\Outputs\\';
 
+    const TIMEOUT_LIMIT = 2;
+    
     protected static $outputMap = [
         'jena' => 'JenaOutput',
         'neo4j' => 'Neo4jOutput',
@@ -40,6 +42,22 @@ class OutputService
             }
         }
         $this->outputOptions = $outputOptions;
+    }
+
+    /**
+     * @param array $names
+     *
+     * @return array
+     */
+    public function getOutputs(array $names)
+    {
+        $outputs = [];
+
+        foreach($names as $name) {
+            $outputs[] = $this->getOutput($name);
+        }
+
+        return $outputs;
     }
 
     /**

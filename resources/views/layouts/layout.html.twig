@@ -14,30 +14,7 @@
 <body>
 <div class="off-canvas-wrapper">
     <div class="off-canvas-wrapper-inner" data-off-canvas-wrapper>
-        <div class="off-canvas position-left reveal-for-large" id="my-info" data-off-canvas data-position="left">
-            <div class="row column" id="header-banner">
-                <h5 class="text-center"><strong>api2DB</strong></h5>
-                <a href="{{ path('homepage') }}"><img class="logo" src="/images/api2db.svg"></a>
-                <h5>Inputs <a href="{{ path('inputs') }}">(Edit)</a></h5>
-                <ul class="settings-list">
-                    {% for driver, input in inputs %}
-                        <li><a href="{{ path('input_view_existing', {'driver': driver}) }}">{{ input.name }}</a></li>
-                    {% endfor %}
-                </ul>
-                <h5>Outputs</h5>
-                <ul class="settings-list">
-                    {% for driver, output in outputs %}
-                        <li>{{ output.name }}</li>
-                    {% endfor %}
-                </ul>
-                <h5>Relations <a href="{{ path('relations') }}">(Edit)</a></h5>
-                <ul class="settings-list">
-                    {% for relation in relations %}
-                        <li>{{ relation }}</li>
-                    {% endfor %}
-                </ul>
-            </div>
-        </div>
+        {% include 'layouts/sidebar.html.twig' %}
         <div class="off-canvas-content" data-off-canvas-content>
             <div class="callout primary">
                 <div class="row column">

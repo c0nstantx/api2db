@@ -9,6 +9,7 @@
  */
 namespace Outputs;
 use Model\OutputData;
+use Model\OutputService;
 
 /**
  * Description of JenaOutput
@@ -54,6 +55,7 @@ class JenaOutput extends AbstractOutput
     protected function execute($query)
     {
         $this->client->request('POST', $this->outputEndpoint, [
+            'connect_timeout' => OutputService::TIMEOUT_LIMIT,
             'form_params' => [
                 'update' => $query
             ]

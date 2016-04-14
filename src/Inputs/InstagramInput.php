@@ -41,4 +41,9 @@ class InstagramInput extends Oauth2Input
     {
         return 'https://api.instagram.com/oauth/access_token';
     }
+
+    public function getName()
+    {
+        return 'instagram';
+    }
 }

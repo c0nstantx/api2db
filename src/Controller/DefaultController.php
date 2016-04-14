@@ -189,26 +189,32 @@ class DefaultController
     {
         return $app['twig']->render('outputs/list.html.twig');
     }
-    
-    public function testAction(Application $app)
+
+    /**
+     * @param Application $app
+     * 
+     * @return Response
+     */
+    public function runAction(Application $app)
     {
-        $outputService = $app['output_service'];
-
-        $jena = $outputService->getOutput('jena');
-        $neo = $outputService->getOutput('neo4j');
-
         $inputService = $app['input_service'];
+        $inputs = $inputService->getInputs(array_keys($app['inputs']));
 
-        $twitter = $inputService->getInput('twitter');
-        $map = $inputService->getInputMap('twitter');
+        $outputService = $app['output_service'];
+        $outputs = $outputService->getOutputs(array_keys($app['outputs']));
 
-        foreach ($map as $endpoint) {
-            $rawData = $twitter->get($endpoint);
-            $data = new GraphOutputData($rawData);
-            $jena->send($data);
-            $neo->send($data);
+        foreach($inputs as $input) {
+            $map = $inputService->getInputMap($input->getName());
+            foreach ($map as $endpoint) {
+                $rawData = $input->get($endpoint);
+                $data = new GraphOutputData($rawData);
+
+                foreach($outputs as $output) {
+                    $output->send($data);
+                }
+            }
         }
 
-        return new Response('IT WORKS !');
+        return $app['twig']->render('run.html.twig');
     }
 }

@@ -50,4 +50,10 @@ $app['output_service'] = $outputService;
 $app['router'] = new \Model\Router($app);
 $app['router']->setupRoutes();
 
+$app->error(function(\Exception $ex, $code) use ($app) {
+    if (!$ex instanceof Twig_Error_Loader) {
+        return $app['twig']->render('error.html.twig', ['exception'=>$ex]);
+    }
+});
+
 return $app;

@@ -33,4 +33,11 @@ interface OutputInterface
      * @param OutputData $data
      */
     public function send(OutputData $data);
+
+    /**
+     * Returns output endpoint
+     *
+     * @return string
+     */
+    public function getEndpoint();
 }

@@ -41,4 +41,9 @@ class FacebookInput extends Oauth2Input
     {
         return 'https://graph.facebook.com/v2.2/oauth/access_token';
     }
+
+    public function getName()
+    {
+        return 'facebook';
+    }
 }

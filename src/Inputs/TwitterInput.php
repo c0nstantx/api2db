@@ -46,4 +46,9 @@ class TwitterInput extends Oauth1Input
     {
         return 'https://api.twitter.com/oauth/access_token';
     }
+    
+    public function getName()
+    {
+        return 'twitter';
+    }
 }

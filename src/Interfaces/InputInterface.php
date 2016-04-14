@@ -33,4 +33,11 @@ interface InputInterface
      * @return mixed
      */
     public function get($url, array $options, array $headers);
+
+    /**
+     * Returns input name
+     * 
+     * @return string
+     */
+    public function getName();
 }

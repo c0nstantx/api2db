@@ -79,5 +79,9 @@ class Router
         
         $this->app->delete('/relation/{relation}', 'Controller\\DefaultController::deleteRelationAction')
             ->bind('relation_delete');
+        
+        /* Run */
+        $this->app->get('/run', 'Controller\\DefaultController::runAction')
+            ->bind('execute');
     }
 }

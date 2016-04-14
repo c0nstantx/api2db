@@ -15,6 +15,7 @@ use League\OAuth2\Client\Provider\Exception\IdentityProviderException;
 use League\OAuth2\Client\Provider\ResourceOwnerInterface;
 use League\OAuth2\Client\Token\AccessToken;
 use Model\ConnectorHelper;
+use Model\InputService;
 use Psr\Http\Message\ResponseInterface;
 
 /**
@@ -71,7 +72,8 @@ abstract class Oauth2Input extends AbstractProvider implements InputInterface
         $requestHeaders = $this->buildHeaders($headers);
 
         $requestOptions = [
-            'headers' => $requestHeaders
+            'headers' => $requestHeaders,
+            'connect_timeout' => InputService::TIMEOUT_LIMIT
         ];
         $response = $this->client->get($url, $requestOptions);
 

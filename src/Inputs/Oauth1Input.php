@@ -16,6 +16,7 @@ use League\OAuth1\Client\Credentials\TokenCredentials;
 use League\OAuth1\Client\Server\Server;
 use League\OAuth1\Client\Server\User;
 use Model\ConnectorHelper;
+use Model\InputService;
 
 /**
  * Description of Oauth1Input
@@ -74,7 +75,8 @@ abstract class Oauth1Input extends Server implements InputInterface
             $requestHeaders = $this->buildHeaders($url, $headers);
         }
         $requestOptions = [
-            'headers' => $requestHeaders
+            'headers' => $requestHeaders,
+            'connect_timeout' => InputService::TIMEOUT_LIMIT
         ];
 
         try {

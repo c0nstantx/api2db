@@ -23,6 +23,8 @@ class InputService
 {
     const INPUT_NAMESPACE = '\\Inputs\\';
 
+    const TIMEOUT_LIMIT = 10;
+    
     protected static $inputMap = [
         'twitter' => 'TwitterInput',
         'facebook' => 'FacebookInput',
@@ -56,6 +58,22 @@ class InputService
     {
         return array_keys(self::$inputMap);
     }
+
+    /**
+     * @param array $names
+     * 
+     * @return array
+     */
+    public function getInputs(array $names)
+    {
+        $inputs = [];
+        
+        foreach($names as $name) {
+            $inputs[] = $this->getInput($name);
+        }
+        
+        return $inputs;
+    }
     
     /**
      * @param string $name
@@ -74,14 +92,6 @@ class InputService
         }
         
         return $this->inputs[$name];
-    }
-
-    /**
-     * @return array
-     */
-    public function getInputs()
-    {
-        return array_keys($this->inputOptions);
     }
 
     /**

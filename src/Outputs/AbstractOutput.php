@@ -8,10 +8,13 @@
  * Thanks :)
  */
 namespace Outputs;
+use Exception\OutputUnreachableException;
 use GuzzleHttp\Client;
 use GuzzleHttp\ClientInterface;
+use GuzzleHttp\Exception\ConnectException;
 use Interfaces\OutputInterface;
 use Model\OutputData;
+use Model\OutputService;
 
 /**
  * Description of AbstractOutput
@@ -48,6 +51,14 @@ abstract class AbstractOutput implements OutputInterface
     }
 
     /**
+     * @return string
+     */
+    public function getEndpoint()
+    {
+        return $this->outputEndpoint;
+    }
+    
+    /**
      * Setup output
      * 
      * @param array $options
@@ -74,7 +85,13 @@ abstract class AbstractOutput implements OutputInterface
      */
     protected function checkOutput()
     {
-        $this->client->request('GET', $this->outputEndpoint);
+        try {
+            $this->client->request('GET', $this->outputEndpoint, [
+                'connect_timeout' => OutputService::TIMEOUT_LIMIT,
+            ]);
+        } catch (ConnectException $ex) {
+            throw new OutputUnreachableException($this, $ex);
+        }
     }
 
     /**
