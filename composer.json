@@ -22,5 +22,13 @@
     },
     "autoload": {
         "psr-4": { "": "src" }
+    },
+    "scripts": {
+        "post-install-cmd": [
+            "Composer\\ScriptHandler::buildConfig"
+        ],
+        "post-update-cmd": [
+            "Composer\\ScriptHandler::buildConfig"
+        ]
     }
 }
