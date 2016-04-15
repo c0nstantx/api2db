@@ -38,8 +38,8 @@ class YmlStorage implements StorageInterface
         } else {
             $fileData['default'] = $data;
         }
-        
-        file_put_contents($this->storageFile, Yaml::dump($fileData, 4), LOCK_EX);
+
+        $this->saveRaw($fileData);
     }
 
     /**
@@ -55,12 +55,25 @@ class YmlStorage implements StorageInterface
     }
 
     /**
+     * @return string
+     */
+    public function getStorageFile()
+    {
+        return $this->storageFile;
+    }
+    
+    /**
      * @return array
      */
-    protected function getFileData()
+    public function getFileData()
     {
         $data = file_get_contents($this->storageFile);
         
         return Yaml::parse($data);
+    }
+    
+    public function saveRaw($data)
+    {
+        file_put_contents($this->storageFile, Yaml::dump($data, 4), LOCK_EX);
     }
 }

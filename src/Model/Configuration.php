@@ -22,8 +22,8 @@ class Configuration
     /** @var Application */
     protected $app;
 
-    /** @var string */
-    protected $configFile;
+    /** @var YmlStorage */
+    protected $configStorage;
 
     /** @var array */
     protected $config;
@@ -31,11 +31,9 @@ class Configuration
     public function __construct(Application $app, $configFile)
     {
         $this->app = $app;
-        $this->configFile = $configFile;
+        $this->configStorage = new YmlStorage($configFile);
 
-        $configData = file_get_contents($this->configFile);
-        $this->config = Yaml::parse($configData);
-
+        $this->config = $this->configStorage->getFileData();
         $this->setup();
     }
 
@@ -63,7 +61,7 @@ class Configuration
     public function addInput($driver, array $data)
     {
         $this->config['inputs'][$driver] = $data;
-        file_put_contents($this->configFile, Yaml::dump($this->config, 4));
+        $this->saveConfig();
 
         return $this;
     }
@@ -104,10 +102,7 @@ class Configuration
      */
     protected function setup()
     {
-        $configData = file_get_contents($this->configFile);
-        $config = Yaml::parse($configData);
-
-        foreach($config as $key => $values) {
+        foreach($this->config as $key => $values) {
             if (!isset($this->app[$key])) {
                 $this->app[$key] = $values;
             }
@@ -119,6 +114,6 @@ class Configuration
      */
     protected function saveConfig()
     {
-        file_put_contents($this->configFile, Yaml::dump($this->config, 4));
+        $this->configStorage->saveRaw($this->config);
     }
 }
