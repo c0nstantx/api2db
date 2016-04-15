@@ -39,7 +39,7 @@ class YmlStorage implements StorageInterface
             $fileData['default'] = $data;
         }
         
-        file_put_contents($this->storageFile, Yaml::dump($fileData), LOCK_EX);
+        file_put_contents($this->storageFile, Yaml::dump($fileData, 4), LOCK_EX);
     }
 
     /**

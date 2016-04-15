@@ -1,0 +1,40 @@
+{% extends 'layouts/layout.html.twig' %}
+
+{% block body %}
+    <h3>Add endpoint</h3>
+    <form method="post" action="{{ path('endpoint_create', {'driver':driver}) }}" data-abide>
+        <div class="grid-block">
+            <div class="small-12 medium-6">
+                <div class="row collapse">
+                    <div class="small-9 columns">
+                        <input id="endpoint-url" name="url" type="text" placeholder="Enter Input endpoint" value="{{ app.request.get('url') }}"/>
+                    </div>
+                    <div class="small-3 columns">
+                        <a id="fetch-data-button" href="{{ path('fetch_input', {'driver':driver}) }}" class="button postfix">Fetch data</a>
+                    </div>
+                    <span class="form-error" id="fetch-error"></span>
+                </div>
+            </div>
+            <div class="small-12 medium-6">
+                <div class="row collapse">
+                    <input name="owner" type="text" placeholder="Enter owner name" value="{{ app.request.get('object') }}"/>
+                </div>
+            </div>
+            <div class="small-12 medium-6">
+                <div class="row collapse">
+                    <input name="object" type="text" placeholder="Enter object name" value="{{ app.request.get('object') }}"/>
+                </div>
+            </div>
+            <div class="small-12 medium-6">
+                <a href="#" id="add-mapping" data-prototype="{{ include('input/map_proto.html.twig')|escape }}">+ Add mapping</a>
+            </div>
+            <div class="small-12 medium-6">
+                <input type="submit" class="button" value="Create"/>
+            </div>
+            <div class="small-12">
+                <pre class="prettyprint lang-js" id="endpoint-data" style="display:none;">
+                </pre>
+            </div>
+        </div>
+    </form>
+{% endblock %}

@@ -11,6 +11,7 @@
 namespace Controller;
 use Guzzle\Inflection\Inflector;
 use Silex\Application;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -22,14 +23,98 @@ use Symfony\Component\HttpFoundation\Response;
  */
 class InputController
 {
+    /**
+     * @param string $driver
+     * @param Application $app
+     * 
+     * @return Response
+     */
     public function endpointsMapAction($driver, Application $app)
     {
-        $map = $app['input_service']->getInputMap($driver);
+        $endpoints = $app['input_service']->getInputMap($driver);
 
-        var_dump($map);
+        return $app['twig']->render('input/endpoints.html.twig', [
+            'driver' => $driver,
+            'endpoints' => $endpoints
+        ]);
+    }
+
+    public function deleteEndpointAction($driver, Application $app, Request $request)
+    {
+        var_dump($request);
         exit;
     }
 
+    /**
+     * @param $driver
+     * @param Application $app
+     * @param Request $request
+     *
+     * @return RedirectResponse
+     */
+    public function createEndpointAction($driver, Application $app, Request $request)
+    {
+        $inputService = $app['input_service'];
+        
+        $map = $request->request->all();
+        if ($inputService->endpointIsValid($driver, $map)) {
+            $inputService->insertEndpoint($driver, $map);
+        }
+
+        return new RedirectResponse($app['url_generator']->generate('endpoints', ['driver'=>$driver]));
+    }
+
+    /**
+     * @param $driver
+     * @param Application $app
+     *
+     * @return Response
+     */
+    public function viewEndpointAction($driver, Application $app)
+    {
+        return $app['twig']->render('input/view_endpoint.html.twig', [
+            'driver' => $driver
+        ]);
+    }
+
+    /**
+     * @param string $driver
+     * @param Application $app
+     * @param Request $request
+     *
+     * @return JsonResponse|RedirectResponse
+     */
+    public function fetchInputAction($driver, Application $app, Request $request)
+    {
+        if ($request->isXmlHttpRequest()) {
+            $response = [
+                'status' => 'error',
+                'message' => 'Unknown error'
+            ];
+            
+            if (!$request->get('url')) {
+                $response['message'] = 'No url is defined';
+            }
+            $inputService = $app['input_service'];
+            $input = $inputService->getInput($driver);
+
+            try {
+                $data = $input->get($request->get('url'));
+                if (!$data) {
+                    throw new \RuntimeException('No response was returned');
+                }
+                $response['status'] = 'success';
+                $response['message'] = $data;
+            } catch (\Exception $ex) {
+                $response['message'] = $ex->getMessage();
+            }
+
+            return new JsonResponse($response);
+        }
+        
+        return new RedirectResponse($app['url_generator']->generate('homepage'));
+    }
+    
     /**
      * @param Application $app
      *

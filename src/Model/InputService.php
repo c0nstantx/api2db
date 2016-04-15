@@ -52,6 +52,42 @@ class InputService
     }
 
     /**
+     * @param string $driver
+     * @param array $map
+     *
+     * @return bool
+     */
+    public function endpointIsValid($driver, array $map)
+    {
+        if (!isset($map['url']) || $map['url'] === '') {
+            return false;
+        }
+        if (!isset($map['owner']) || $map['owner'] === '') {
+            return false;
+        }
+        if (!isset($map['object']) || $map['object'] === '') {
+            return false;
+        }
+
+        return true;
+    }
+
+    public function insertEndpoint($driver, array $map)
+    {
+        $mapping = [
+            'url' => $map['url'],
+            'owner' => $map['owner'],
+            'object' => $map['object'],
+            'map' => $this->buildMapping($map)
+        ];
+
+        $map = $this->getInputMap($driver);
+        $map[] = $mapping;
+
+        $this->updateInputMap($driver, $map);
+    }
+
+    /**
      * @return array
      */
     public function getAvailableInputs()
@@ -190,5 +226,29 @@ class InputService
         $fullClass = self::INPUT_NAMESPACE.$className;
 
         return new $fullClass($credentials);
+    }
+
+    /**
+     * @param array $map
+     *
+     * @return array
+     */
+    protected function buildMapping(array $map)
+    {
+        /* TODO: Need a better approach */
+        $mapping = [];
+        if (isset($map['source']) && count($map['source'])) {
+            foreach($map['source'] as $key => $source) {
+                if ($source !== '' && $map['relation'][$key] !== '' && $map['dest'][$key] !== '') {
+                    $mapping[] = [
+                        'source' => $source,
+                        'relation' => $map['relation'][$key],
+                        'destination' => $map['dest'][$key]
+                    ];
+                }
+            }
+        }
+
+        return $mapping;
     }
 }

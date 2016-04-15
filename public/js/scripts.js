@@ -43,4 +43,47 @@ $(document).ready(function() {
             $('.input-meta#oauth2').hide();
         }
     });
+
+    /* Fetch endpoint data */
+    $(document).on('click', '#fetch-data-button', function(elem) {
+        elem.preventDefault();
+        var button = $(this);
+        button.attr('disabled', true);
+        $('#fetch-error').removeClass('is-visible');
+        $('#endpoint-url').removeClass('is-invalid-input');
+        $('#endpoint-data').hide();
+        $('#endpoint-data').html('');
+        $.ajax({
+            url: button.attr('href'),
+            method: 'POST',
+            data: {url: $('#endpoint-url').val()},
+            dataType: 'json',
+            success: function(data) {
+                button.attr('disabled', false);
+                if (data.status === 'error') {
+                    $('#fetch-error').html(data.message);
+                    $('#fetch-error').addClass('is-visible');
+                    $('#endpoint-url').addClass('is-invalid-input');
+                    $('#endpoint-data').hide();
+                } else {
+                    $('#fetch-error').removeClass('is-visible');
+                    $('#endpoint-url').removeClass('is-invalid-input');
+                    $('#endpoint-data').html(JSON.stringify(data.message, null, 2));
+                    $('#endpoint-data').show();
+                }
+            }
+        })
+    });
+
+    /* Add mapping */
+    $(document).on('click', '#add-mapping', function(elem) {
+        elem.preventDefault();
+        var prototype = $(this).data('prototype');
+
+        var number = $('.map-input-box').length + 1;
+        var newForm = prototype.replace(/__number__/g, number);
+
+        $(this).after(newForm);
+
+    });
 });
