@@ -2,9 +2,9 @@
 
 {% block body %}
     {% if relations|length %}
-        <ul>
+        <ul class="list-none">
             {% for relation in relations %}
-                <li>{{ relation }} <a href="{{ path('relation_delete', {'relation': relation}) }}" data-name="{{ relation }}" class="delete-io"><i class="fa fa-trash" aria-hidden="true"></i></a></li>
+                <li><a href="{{ path('relation_delete', {'relation': relation}) }}" data-name="{{ relation }}" class="delete-io"><i class="fa fa-trash" aria-hidden="true"></i></a> {{ relation }}</li>
             {% endfor %}
         </ul>
     {% else %}

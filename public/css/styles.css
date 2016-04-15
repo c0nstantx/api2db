@@ -3,12 +3,19 @@
 }
 
 .frontpage-intro .callout {
-    height: 356px;
+    height: 375px;
 }
 .frontpage-intro .callout img {
     height:130px;
     width: 100%;
 }
+.frontpage-intro .lead {
+    height: 66px;
+}
 .input-meta {
     display: none;
+}
+
+.list-none {
+    list-style: none;
 }

@@ -2,6 +2,7 @@
 
 {% block body %}
     {% if driver %}
+        <a class="button" href="{{ path('endpoints', {'driver':driver}) }}">Edit endpoints map</a>
         <h3>Edit {{ driver }}</h3>
         <form method="post" action="{{ path('input_update', {'driver': driver}) }}" data-abide>
     {% else %}

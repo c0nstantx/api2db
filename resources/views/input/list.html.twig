@@ -2,9 +2,9 @@
 
 {% block body %}
     {% if inputs|length %}
-        <ul>
+        <ul class="list-none">
             {% for driver, input in inputs %}
-                <li>{{ input.name }} <a href="{{ path('input_delete', {'driver': driver}) }}" data-name="{{ input.name }}" class="delete-io"><i class="fa fa-trash" aria-hidden="true"></i></a></li>
+                <li><a href="{{ path('input_delete', {'driver': driver}) }}" data-name="{{ input.name }}" class="delete-io"><i class="fa fa-trash" aria-hidden="true"></i></a> {{ input.name }}</li>
             {% endfor %}
         </ul>
     {% else %}

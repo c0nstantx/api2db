@@ -30,22 +30,22 @@ class Router
             ->bind('homepage');
 
         /* Inputs */
-        $this->app->get('/inputs', 'Controller\\DefaultController::inputsAction')
+        $this->app->get('/inputs', 'Controller\\InputController::inputsAction')
             ->bind('inputs');
         
-        $this->app->get('/input/{driver}', 'Controller\\DefaultController::viewInputAction')
+        $this->app->get('/input/{driver}', 'Controller\\InputController::viewInputAction')
             ->bind('input_view_existing');
         
-        $this->app->get('/input', 'Controller\\DefaultController::viewInputAction')
+        $this->app->get('/input', 'Controller\\InputController::viewInputAction')
             ->bind('input_view');
 
-        $this->app->post('/input', 'Controller\\DefaultController::createInputAction')
+        $this->app->post('/input', 'Controller\\InputController::createInputAction')
             ->bind('input_create');
 
-        $this->app->post('/input/{driver}', 'Controller\\DefaultController::updateInputAction')
+        $this->app->post('/input/{driver}', 'Controller\\InputController::updateInputAction')
             ->bind('input_update');
         
-        $this->app->delete('/input/{driver}', 'Controller\\DefaultController::deleteInputAction')
+        $this->app->delete('/input/{driver}', 'Controller\\InputController::deleteInputAction')
             ->bind('input_delete');
 
         /* Outputs */
@@ -68,17 +68,21 @@ class Router
             ->bind('output_delete');
 
         /* Relations */
-        $this->app->get('/relations', 'Controller\\DefaultController::relationsAction')
+        $this->app->get('/relations', 'Controller\\RelationController::relationsAction')
             ->bind('relations');
         
-        $this->app->get('/relation', 'Controller\\DefaultController::viewRelationAction')
+        $this->app->get('/relation', 'Controller\\RelationController::viewRelationAction')
             ->bind('relation_view');
         
-        $this->app->post('/relation', 'Controller\\DefaultController::createRelationAction')
+        $this->app->post('/relation', 'Controller\\RelationController::createRelationAction')
             ->bind('relation_create');
         
-        $this->app->delete('/relation/{relation}', 'Controller\\DefaultController::deleteRelationAction')
+        $this->app->delete('/relation/{relation}', 'Controller\\RelationController::deleteRelationAction')
             ->bind('relation_delete');
+
+        /* Endpoints */
+        $this->app->get('/{driver}/endpoints', 'Controller\\InputController::endpointsMapAction')
+            ->bind('endpoints');
         
         /* Run */
         $this->app->get('/run', 'Controller\\DefaultController::runAction')
