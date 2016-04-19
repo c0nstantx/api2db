@@ -4,7 +4,7 @@
     {% if endpoints|length %}
         <ul class="list-none">
             {% for endpoint in endpoints %}
-                <li><a href="{{ path('endpoint_delete', {'driver': driver}) }}" data-name="{{ endpoint.url }}" class="delete-io"><i class="fa fa-trash" aria-hidden="true"></i></a> {{ endpoint.url }}</li>
+                <li><a href="{{ path('endpoint_delete', {'driver': driver, 'index': loop.index - 1 }) }}" data-name="{{ endpoint.url }}" class="delete-io"><i class="fa fa-trash" aria-hidden="true"></i></a> {{ endpoint.url }}</li>
             {% endfor %}
         </ul>
     {% else %}

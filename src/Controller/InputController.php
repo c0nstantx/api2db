@@ -39,10 +39,26 @@ class InputController
         ]);
     }
 
-    public function deleteEndpointAction($driver, Application $app, Request $request)
+    /**
+     * @param string $driver
+     * @param string $index
+     * @param Application $app
+     * @param Request $request
+     *
+     * @return JsonResponse|RedirectResponse
+     */
+    public function deleteEndpointAction($driver, $index, Application $app, Request $request)
     {
-        var_dump($request);
-        exit;
+        if ($request->isXmlHttpRequest()) {
+            $app['input_service']->deleteEndpoint($driver, $index);
+            $response = [
+                'status' => 'error',
+                'message' => 'Unknown error'
+            ];
+            return new JsonResponse($response);
+        }
+
+        return new RedirectResponse($app['url_generator']->generate('homepage'));
     }
 
     /**

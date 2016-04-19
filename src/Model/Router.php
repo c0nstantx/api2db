@@ -90,7 +90,7 @@ class Router
         $this->app->post('/{driver}/endpoint', 'Controller\\InputController::createEndpointAction')
             ->bind('endpoint_create');
 
-        $this->app->delete('/{driver}/endpoint', 'Controller\\InputController::deleteEndpointAction')
+        $this->app->delete('/{driver}/endpoint/{index}', 'Controller\\InputController::deleteEndpointAction')
             ->bind('endpoint_delete');
 
         $this->app->post('/{driver}/fetch_input', 'Controller\\InputController::fetchInputAction')

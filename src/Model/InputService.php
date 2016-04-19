@@ -75,6 +75,22 @@ class InputService
         return true;
     }
 
+    /**
+     * @param string $driver
+     * @param int $index
+     */
+    public function deleteEndpoint($driver, $index)
+    {
+        $map = $this->getInputMap($driver);
+
+        unset($map[(int)$index]);
+        $this->updateInputMap($driver, $map);
+    }
+    
+    /**
+     * @param string $driver
+     * @param array $map
+     */
     public function insertEndpoint($driver, array $map)
     {
         $mapping = [
