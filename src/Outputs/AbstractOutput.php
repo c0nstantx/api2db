@@ -30,6 +30,9 @@ abstract class AbstractOutput implements OutputInterface
 
     /** @var array */
     protected $config;
+
+    /** @var string */
+    protected $name;
     
     /**
      * OutputInterface constructor.
@@ -57,7 +60,15 @@ abstract class AbstractOutput implements OutputInterface
     {
         return $this->outputEndpoint;
     }
-    
+
+    /**
+     * @return string
+     */
+    public function getName()
+    {
+        return $this->name;
+    }
+
     /**
      * Setup output
      * 
@@ -71,6 +82,7 @@ abstract class AbstractOutput implements OutputInterface
             'port' => isset($options['port']) ? $options['port'] : null,
             'path' => isset($options['path']) ? $options['path'] : null
         ];
+        $this->name = isset($options['name']) ? $options['name'] : 'Unknown';
         $this->outputEndpoint = sprintf("%s://%s", $this->config['schema'], $this->config['host']);
         if ($this->config['port']) {
             $this->outputEndpoint .= ":{$this->config['port']}";

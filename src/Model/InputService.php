@@ -68,6 +68,9 @@ class InputService
         if (!isset($map['object']) || $map['object'] === '') {
             return false;
         }
+        if (!isset($map['id']) || $map['id'] === '') {
+            return false;
+        }
 
         return true;
     }
@@ -78,6 +81,7 @@ class InputService
             'url' => $map['url'],
             'owner' => $map['owner'],
             'object' => $map['object'],
+            'id' => $map['id'],
             'map' => $this->buildMapping($map)
         ];
 

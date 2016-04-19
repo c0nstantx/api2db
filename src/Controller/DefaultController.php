@@ -59,8 +59,8 @@ class DefaultController
         foreach($inputs as $input) {
             $map = $inputService->getInputMap($input->getName());
             foreach ($map as $endpoint) {
-                $rawData = $input->get($endpoint);
-                $data = new GraphOutputData($rawData);
+                $rawData = $input->get($endpoint['url']);
+                $data = new GraphOutputData($rawData, $endpoint);
 
                 foreach($outputs as $output) {
                     $output->send($data);

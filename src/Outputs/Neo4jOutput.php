@@ -38,30 +38,43 @@ class Neo4jOutput extends AbstractOutput
 
     protected function insertData(array $data)
     {
-        if (!is_numeric($data['subject']) && !is_numeric($data['object'])) {
-            if (!$this->nodeExists($data['subject'])) {
-                $this->createNode($data['subject']);
+        if (!$this->nodeExists('Owner')) {
+            $this->createNode('Owner', ['name' => $data['owner']]);
+        }
+        if (!$this->nodeExists($data['name'], ['id' => $data['id']])) {
+            $attributes = [];
+            foreach($data['attributes'] as $attr) {
+                $attributes[$attr['relation']] = $attr['value'];
             }
-            if (!$this->nodeExists($data['object'])) {
-                $this->createNode($data['object']);
-            }
+            $attributes['id'] = $data['id'];
+            $this->createNode($data['name'], $attributes);
+        }
 
-            if (!$this->relationExists($data['subject'], $data['predicate'], $data['object'])) {
-                $this->createRelation($data['subject'], $data['predicate'], $data['object']);
-            }
+        $subject = [
+            'type' => 'Owner',
+            'attributes' => ['name' => $data['owner']]
+        ];
+        $object = [
+            'type' => $data['name'],
+            'attributes' => ['id' => $data['id']]
+        ];
+        if (!$this->relationExists($subject, $data['relation'], $object)) {
+            $this->createRelation($subject, $data['relation'], $object);
         }
     }
 
     /**
-     * @param string $source
+     * @param array $source
      * @param string $relation
-     * @param string $target
+     * @param array $target
      *
      * @return bool
      */
-    protected function relationExists($source, $relation, $target)
+    protected function relationExists(array $source, $relation, array $target)
     {
-        $query = "MATCH (a:$source)-[r:$relation]->(b:$target) RETURN r";
+        $sourceQuery = $this->getQueryStringForAttributes($source['attributes']);
+        $targetQuery = $this->getQueryStringForAttributes($target['attributes']);
+        $query = "MATCH (a:{$source['type']}$sourceQuery)-[r:$relation]->(b:{$target['type']}$targetQuery) RETURN r";
         $this->neoClient->sendCypherQuery($query);
 
         return !empty($this->neoClient->getRows());
@@ -74,16 +87,20 @@ class Neo4jOutput extends AbstractOutput
      */
     protected function createRelation($source, $relation, $target)
     {
-        $query = "MATCH(a:$source),(b:$target) CREATE (a)-[r:$relation]->(b)";
+        $sourceQuery = $this->getQueryStringForAttributes($source['attributes']);
+        $targetQuery = $this->getQueryStringForAttributes($target['attributes']);
+        $query = "MATCH(a:{$source['type']}$sourceQuery),(b:{$target['type']}$targetQuery) CREATE (a)-[r:$relation]->(b)";
         $this->neoClient->sendCypherQuery($query);
     }
 
     /**
      * @param string $node
      */
-    protected function createNode($node)
+    protected function createNode($node, array $attributes = [])
     {
-        $query = "CREATE (n:$node) RETURN n";
+        $attrQuery = $this->getQueryStringForAttributes($attributes);
+        $query = "CREATE (n:$node$attrQuery) RETURN n";
+
         $this->neoClient->sendCypherQuery($query);
     }
 
@@ -92,12 +109,35 @@ class Neo4jOutput extends AbstractOutput
      *
      * @return bool
      */
-    protected function nodeExists($node)
+    protected function nodeExists($node, array $attributes = [])
     {
-        $query = "MATCH (n:$node) RETURN n";
+        $attrQuery = $this->getQueryStringForAttributes($attributes);
+        $query = "MATCH (n:$node$attrQuery) RETURN n";
         $this->neoClient->sendCypherQuery($query);
 
         return !empty($this->neoClient->getRows());
+    }
+
+    /**
+     * @param array $attributes
+     *
+     * @return string
+     */
+    protected function getQueryStringForAttributes(array $attributes = [])
+    {
+        $queryParams = [];
+        foreach($attributes as $key => $value) {
+            if (is_string($value)) {
+                $queryParams[] = " $key : '$value' ";
+            }
+        }
+
+        $attrQuery = '';
+        if (count($queryParams)) {
+            $attrQuery .= ' { '.implode(', ', $queryParams).' } ';
+        }
+
+        return $attrQuery;
     }
 
     /**

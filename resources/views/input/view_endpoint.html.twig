@@ -26,6 +26,11 @@
                 </div>
             </div>
             <div class="small-12 medium-6">
+                <div class="row collapse">
+                    <input name="id" type="text" placeholder="Enter identifier from endpoint" value="{{ app.request.get('object') }}"/>
+                </div>
+            </div>
+            <div class="small-12 medium-6">
                 <a href="#" id="add-mapping" data-prototype="{{ include('input/map_proto.html.twig')|escape }}">+ Add mapping</a>
             </div>
             <div class="small-12 medium-6">

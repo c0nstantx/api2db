@@ -40,13 +40,58 @@ class JenaOutput extends AbstractOutput
 
         $query = '';
         if (count($transformedData)) {
-            $query .= "PREFIX subjects_ns: <http://custom/ns/subjects#>\nPREFIX relation_ns: <http://custom/ns/relations#>\nINSERT DATA { \n";
-            foreach ($transformedData as $tData) {
-                $query .= "\tsubjects_ns:{$tData['subject']} relation_ns:{$tData['predicate']} '{$tData['object']}'. \n";
+            $data = $this->processData($transformedData);
+            $query .= "PREFIX subjects_ns: <http://custom/ns/subjects#>\nPREFIX relation_ns: <http://custom/ns/relations#>\nPREFIX object_ns: <http://custom/ns/objects#>\nINSERT DATA { \n";
+            foreach ($data as $pData) {
+                $object = $pData['object']['type'] === 'object' ? 'object_ns:'.$pData['object']['value'] : "'".$pData['object']['value']."'";
+                $query .= "\tsubjects_ns:{$pData['subject']} relation_ns:{$pData['predicate']} $object. \n";
             }
             $query .= '}';
         }
+
         return $query;
+    }
+
+    /**
+     * @param array $data
+     *
+     * @return array
+     */
+    protected function processData(array $data)
+    {
+        $pData = [];
+
+        foreach($data as $d) {
+            $pData[] = [
+                'subject' => $d['owner'],
+                'predicate' => $d['relation'],
+                'object' => [
+                    'type' => 'object',
+                    'value' => $d['name'].'_'.$d['id']
+                ]
+            ];
+            $pData[] = [
+                'subject' => $d['name'].'_'.$d['id'],
+                'predicate' => 'HAS_ID',
+                'object' => [
+                    'type' => 'literal',
+                    'value' => $d['id']
+                ]
+            ];
+
+            foreach($d['attributes'] as $attribute) {
+                $pData[] = [
+                    'subject' => $d['name'].'_'.$d['id'],
+                    'predicate' => $attribute['relation'],
+                    'object' => [
+                        'type' => 'literal',
+                        'value' => $attribute['value']
+                    ]
+                ];
+            }
+        }
+
+        return $pData;
     }
 
     /**

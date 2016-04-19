@@ -16,64 +16,121 @@ namespace Model;
  */
 class GraphOutputData extends OutputData
 {
-    /** @var array */
+    protected $url;
+
+    protected $owner;
+
+    protected $object;
+
+    protected $id;
+
     protected $map;
 
-    public function __construct($rawData, array $map = null)
+    protected $ownerToSubjectRelation = 'HAS';
+
+    public function __construct($rawData, array $endpointData)
     {
         parent::__construct($rawData);
-        $this->map = $map;
+        $this->url = $endpointData['url'];
+        $this->owner = $endpointData['owner'];
+        $this->object = $endpointData['object'];
+        $this->id = $endpointData['id'];
+        $this->map = $endpointData['map'];
     }
 
     protected function transformData()
     {
-        foreach($this->rawData as $rawData) {
-            $this->transformedData[] = [
-                'subject' => 'kchristofilos',
-                'predicate' => 'HAS_TWEET',
-                'object' => 'tweet_'.$rawData['id']
-            ];
-            $this->transformedData[] = [
-                'subject' => 'tweet_'.$rawData['id'],
-                'predicate' => 'HAS_ID',
-                'object' => $rawData['id']
-            ];
-            $date = new \DateTime($rawData['created_at']);
-            $this->transformedData[] = [
-                'subject' => 'tweet_'.$rawData['id'],
-                'predicate' => 'CREATED_AT',
-                'object' => 'time_'.$date->getTimestamp()
-            ];
+        $this->buildOwnerRelation();
+        if (is_array($this->rawData)) {
+            $this->parseArrayData($this->rawData);
+        } else {
+            $this->parsePlainData($this->rawData);
         }
-//        $this->map['default'] = [
-//            'subject' => 'kchristofilos',
-//            'predicate' => 'HAS_TWEET',
-//            'object' => 'id'
-//        ];
-//        $this->map['created_at'] = [
-//            'predicate' => 'CREATED_AT',
-//        ];
-//        $this->map['id'] = [
-//            'predicate' => 'HAS',
-//        ];
-//        $this->map['source'] = [
-//            'predicate' => 'HAS_SOURCE',
-//        ];
-//
-//        var_dump($this->map);
-//        exit;
-//        foreach($this->rawData as $rawData) {
-//            $this->transformedData[] = [
-//                'subject' => $this->map['default']['subject'],
-//                'predicate' => $this->map['default']['predicate'],
-//                'object' => $rawData[$this->map['default']['object']]
-//            ];
-//            var_dump($this->transformedData);
-//            exit;
-//            var_dump($rawData);
-//            exit;
-//        }
-//        exit;
-//        $this->append($this->rawData);
+    }
+
+    protected function buildOwnerRelation()
+    {
+        foreach($this->map as $map) {
+            if ($map['source'] === 'owner' && $map['destination'] === 'object') {
+                $this->ownerToSubjectRelation = $map['relation'];
+            }
+        }
+    }
+
+    /**
+     * @param array $data
+     */
+    protected function parseArrayData(array $data)
+    {
+        foreach($data as $d) {
+            $this->parsePlainData($d);
+        }
+    }
+
+    /**
+     * @param array $data
+     */
+    protected function parsePlainData(array $data)
+    {
+        $object = $this->createMainObject($data);
+        foreach($this->map as $map) {
+            $key = $map['destination'];
+            if ($key === 'owner') {
+                $value = $this->owner;
+            } else if ($key === 'object') {
+                $value = $this->object;
+            } else {
+                if (isset($data[$key])) {
+                    $value = $data[$key];
+                } else {
+                    $value = null;
+                }
+            }
+
+            if ($value) {
+                $attribute = [
+                    'relation' => $map['relation'],
+                    'value' => $value,
+                ];
+                $object['attributes'][] = $attribute;
+            }
+        }
+
+        $this->transformedData[] = $object;
+    }
+
+    /**
+     * @param mixed $key
+     *
+     * @return bool
+     */
+    protected function isInMap($key)
+    {
+        if ($key === 'object' || $key === 'owner') {
+            return true;
+        }
+        foreach($this->map as $map) {
+            if ($map['source'] == $key) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * @param array $data
+     *
+     * @return array
+     */
+    protected function createMainObject(array $data)
+    {
+        return [
+            'owner' => $this->owner,
+            'id' => $data[$this->id],
+            'name' => $this->object,
+            'relation' => $this->ownerToSubjectRelation,
+            'attributes' => []
+        ];
     }
 }

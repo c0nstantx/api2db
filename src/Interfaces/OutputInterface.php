@@ -40,4 +40,11 @@ interface OutputInterface
      * @return string
      */
     public function getEndpoint();
+
+    /**
+     * Returns output name
+     *
+     * @return string
+     */
+    public function getName();
 }
