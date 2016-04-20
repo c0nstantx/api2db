@@ -44,6 +44,7 @@ class JenaOutput extends AbstractOutput
             $query .= "PREFIX subjects_ns: <http://custom/ns/subjects#>\nPREFIX relation_ns: <http://custom/ns/relations#>\nPREFIX object_ns: <http://custom/ns/objects#>\nINSERT DATA { \n";
             foreach ($data as $pData) {
                 $object = $pData['object']['type'] === 'object' ? 'object_ns:'.$pData['object']['value'] : "'".$pData['object']['value']."'";
+                $object = $this->sanitize($object);
                 $query .= "\tsubjects_ns:{$pData['subject']} relation_ns:{$pData['predicate']} $object. \n";
             }
             $query .= '}';
@@ -105,5 +106,15 @@ class JenaOutput extends AbstractOutput
                 'update' => $query
             ]
         ]);
+    }
+
+    /**
+     * @param string $content
+     *
+     * @return string
+     */
+    protected function sanitize($content)
+    {
+        return str_replace("\n", "", $content);
     }
 }
