@@ -24,7 +24,7 @@ $(document).ready(function() {
                 url: button.attr('href'),
                 method: 'DELETE',
                 complete: function() {
-                    // window.location.reload();
+                    window.location.reload();
                 }
             })
         }
