@@ -11,6 +11,7 @@ namespace Controller;
 
 use Guzzle\Inflection\Inflector;
 use Model\GraphOutputData;
+use Model\NERTagger3;
 use Silex\Application;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -50,9 +51,11 @@ class DefaultController
      */
     public function runAction(Application $app)
     {
+        /* Get all inputs */
         $inputService = $app['input_service'];
         $inputs = $inputService->getInputs(array_keys($app['inputs']));
 
+        /* Get all outputs */
         $outputService = $app['output_service'];
         $outputs = $outputService->getOutputs(array_keys($app['outputs']));
 
@@ -60,9 +63,15 @@ class DefaultController
             $map = $inputService->getInputMap($input->getName());
             foreach ($map as $endpoint) {
                 $rawData = $input->get($endpoint['url']);
-                $data = new GraphOutputData($rawData, $endpoint);
+                $inputData = [
+                    'raw' => $rawData,
+                    'endpoint' => $endpoint
+                ];
 
                 foreach($outputs as $output) {
+                    $data = $outputService->getDataAdapter($output, $inputData);
+                    $entities = $app['ner_service']->getEntities($data);
+                    $data->setEntities($entities);
                     $output->send($data);
                 }
             }

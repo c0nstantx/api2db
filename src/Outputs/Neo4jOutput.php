@@ -61,6 +61,30 @@ class Neo4jOutput extends AbstractOutput
         if (!$this->relationExists($subject, $data['relation'], $object)) {
             $this->createRelation($subject, $data['relation'], $object);
         }
+
+        if (isset($data['entities'])) {
+            $entities = $data['entities'];
+            foreach($entities as $entity) {
+                $attributes = [
+                    'name' => $entity[0]
+                ];
+                if (!$this->nodeExists($entity[1], $attributes)) {
+                    $this->createNode($entity[1], $attributes);
+                }
+
+                $subject = [
+                    'type' => $entity[1],
+                    'attributes' => ['name' => $entity[0]]
+                ];
+                $object = [
+                    'type' => $data['name'],
+                    'attributes' => ['id' => $data['id']]
+                ];
+                if (!$this->relationExists($object, 'REFERS', $subject)) {
+                    $this->createRelation($object, 'REFERS', $subject);
+                }
+            }
+        }
     }
 
     /**

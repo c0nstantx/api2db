@@ -45,6 +45,22 @@ class OutputService
     }
 
     /**
+     * @param OutputInterface $output
+     * @param array $data
+     * 
+     * @return OutputData
+     */
+    public function getDataAdapter(OutputInterface $output, array $data)
+    {
+        switch ($output->getName()) {
+            case 'jena':
+            case 'neo4j':
+            default:
+                return new GraphOutputData($data['raw'], $data['endpoint']);
+        }
+    }
+    
+    /**
      * @param array $names
      *
      * @return array

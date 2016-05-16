@@ -47,6 +47,13 @@ $app['input_service'] = $inputService;
 $outputService = new \Model\OutputService($app['outputs']);
 $app['output_service'] = $outputService;
 
+/* NER service */
+$app['ner_service'] = new \Model\NERService(
+    '/Users/kostasx/Downloads/stanford-ner-2015-12-09/classifiers/english.all.3class.distsim.crf.ser.gz', 
+    '/Users/kostasx/Downloads/stanford-ner-2015-12-09/stanford-ner.jar', 
+    '/Users/kostasx/Downloads/stanford-ner-2015-12-09/lib'
+);
+
 $app['router'] = new \Model\Router($app);
 $app['router']->setupRoutes();
 

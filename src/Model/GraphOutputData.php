@@ -28,6 +28,8 @@ class GraphOutputData extends OutputData
 
     protected $ownerToSubjectRelation = 'HAS';
 
+    protected $entities = [];
+    
     public function __construct($rawData, array $endpointData)
     {
         parent::__construct($rawData);
@@ -38,9 +40,29 @@ class GraphOutputData extends OutputData
         $this->map = $endpointData['map'];
     }
 
+    /**
+     * @return array
+     */
+    public function getMap()
+    {
+        return $this->map;
+    }
+
+    /**
+     * @param array $entities
+     * 
+     * @return GraphOutputData
+     */
+    public function setEntities(array $entities)
+    {
+        $this->entities = $entities;
+        
+        return $this;
+    }
+    
     protected function transformData()
     {
-        $this->buildOwnerRelation();
+//        $this->buildOwnerRelation();
         if (is_array($this->rawData)) {
             $this->parseArrayData($this->rawData);
         } else {
@@ -73,29 +95,17 @@ class GraphOutputData extends OutputData
     protected function parsePlainData(array $data)
     {
         $object = $this->createMainObject($data);
-        foreach($this->map as $map) {
-            $key = $map['destination'];
-            if ($key === 'owner') {
-                $value = $this->owner;
-            } else if ($key === 'object') {
-                $value = $this->object;
-            } else {
-                if (isset($data[$key])) {
-                    $value = $data[$key];
-                } else {
-                    $value = null;
-                }
-            }
 
-            if ($value) {
-                $attribute = [
-                    'relation' => $map['relation'],
-                    'value' => $value,
+        foreach($data as $key => $value) {
+            if (is_scalar($value)) {
+                $object['attributes'][] = [
+                    'relation' => $key,
+                    'value' => addslashes(strip_tags($value))
                 ];
-                $object['attributes'][] = $attribute;
             }
         }
 
+        $object['entities'] = $this->entities;
         $this->transformedData[] = $object;
     }
 

@@ -38,6 +38,7 @@ abstract class OutputData
     public function getTransformedData()
     {
         $this->transformData();
+        
         return $this->transformedData;
     }
     
