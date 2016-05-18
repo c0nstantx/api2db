@@ -2,6 +2,7 @@
 
 {% block body %}
     <div class="callout alert">
-        {{ exception.message }}
+        {{ exception.message }}<br><br>
+        {{ exception.file }}:{{ exception.line }}
     </div>
 {% endblock %}

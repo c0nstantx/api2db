@@ -61,18 +61,20 @@ class DefaultController
 
         foreach($inputs as $input) {
             $map = $inputService->getInputMap($input->getName());
-            foreach ($map as $endpoint) {
-                $rawData = $input->get($endpoint['url']);
-                $inputData = [
-                    'raw' => $rawData,
-                    'endpoint' => $endpoint
-                ];
+            if ($map) {
+                foreach ($map as $endpoint) {
+                    $rawData = $input->get($endpoint['url']);
+                    $inputData = [
+                        'raw' => $rawData,
+                        'endpoint' => $endpoint
+                    ];
 
-                foreach($outputs as $output) {
-                    $data = $outputService->getDataAdapter($output, $inputData);
-                    $entities = $app['ner_service']->getEntities($data);
-                    $data->setEntities($entities);
-                    $output->send($data);
+                    foreach($outputs as $output) {
+                        $data = $outputService->getDataAdapter($output, $inputData);
+                        $entities = $app['ner_service']->getEntities($data);
+                        $data->setEntities($entities);
+                        $output->send($data);
+                    }
                 }
             }
         }

@@ -100,7 +100,7 @@ class GraphOutputData extends OutputData
             if (is_scalar($value)) {
                 $object['attributes'][] = [
                     'relation' => $key,
-                    'value' => addslashes(strip_tags($value))
+                    'value' => $this->sanitizeText($value)
                 ];
             }
         }
@@ -142,5 +142,27 @@ class GraphOutputData extends OutputData
             'relation' => $this->ownerToSubjectRelation,
             'attributes' => []
         ];
+    }
+
+    /**
+     * @param string $text
+     *
+     * @return string
+     */
+    protected function sanitizeText($text)
+    {
+        $regexs = [
+            '/[\x{1F600}-\x{1F64F}]/u', // Match Emoticons
+            '/[\x{1F300}-\x{1F5FF}]/u', // Match Miscellaneous Symbols and Pictographs
+            '/[\x{1F680}-\x{1F6FF}]/u', // Match Transport And Map Symbols
+            '/[\x{2600}-\x{26FF}]/u', // Match Miscellaneous Symbols
+            '/[\x{2700}-\x{27BF}]/u' // Match Dingbats
+        ];
+        
+        foreach($regexs as $regex) {
+            $text = preg_replace($regex, '', $text);
+        }
+
+        return addslashes(strip_tags($text));
     }
 }

@@ -9,6 +9,7 @@
  */
 namespace Inputs;
 use GuzzleHttp\Client;
+use GuzzleHttp\Exception\ClientException;
 use Interfaces\InputInterface;
 use League\OAuth2\Client\Provider\AbstractProvider;
 use League\OAuth2\Client\Provider\Exception\IdentityProviderException;
@@ -32,20 +33,11 @@ abstract class Oauth2Input extends AbstractProvider implements InputInterface
     protected $token;
 
     /** @var string */
-    protected $id;
-
-    /** @var string */
-    protected $secret;
-
-    /** @var string */
     protected $tokenName = null;
 
     public function __construct(array $credentials)
     {
         parent::__construct();
-
-        $this->id = $credentials['identifier'];
-        $this->secret = $credentials['secret'];
 
         if (isset($credentials['access_token'])) {
             $this->token = new AccessToken($credentials);
@@ -75,10 +67,16 @@ abstract class Oauth2Input extends AbstractProvider implements InputInterface
             'headers' => $requestHeaders,
             'connect_timeout' => InputService::TIMEOUT_LIMIT
         ];
-        $response = $this->client->get($url, $requestOptions);
 
-        var_dump($response);
-        exit;
+        try {
+            $response = $this->client->get($url, $requestOptions);
+        } catch (ClientException $ex) {
+            $response = $ex->getResponse();
+        }
+
+        $body = (string)$response->getBody();
+
+        return json_decode($body, true);
     }
 
     /**

@@ -31,19 +31,10 @@ abstract class Oauth1Input extends Server implements InputInterface
     /** @var TokenCredentials */
     protected $token;
 
-    /** @var string */
-    protected $id;
-
-    /** @var string */
-    protected $secret;
-    
     public function __construct(array $credentials)
     {
         parent::__construct($credentials);
 
-        $this->id = $credentials['identifier'];
-        $this->secret = $credentials['secret'];
-        
         if (isset($credentials['client_secret']) && isset($credentials['client_key'])) {
             $this->token = new TokenCredentials();
             $this->token->setSecret($credentials['client_secret']);

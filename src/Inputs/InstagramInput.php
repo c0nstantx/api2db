@@ -16,6 +16,7 @@ namespace Inputs;
  */
 class InstagramInput extends Oauth2Input
 {
+    protected $tokenName = 'access_token';
 
     /**
      * Returns the base URL for authorizing a client.
@@ -40,6 +41,17 @@ class InstagramInput extends Oauth2Input
     public function getBaseAccessTokenUrl(array $params = [])
     {
         return 'https://api.instagram.com/oauth/access_token';
+    }
+
+    public function get($url, array $options = [], array $headers = [], $limit = 10)
+    {
+        $response = parent::get($url, $options, $headers);
+
+        if (isset($response['data'])) {
+            return array_slice($response['data'], 0, $limit);
+        }
+
+        return [];
     }
 
     public function getName()
