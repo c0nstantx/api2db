@@ -25,7 +25,7 @@ $app->register(new \Silex\Provider\TwigServiceProvider(), [
 $app->extend('twig', function($twig, $app) {
     $twig->addGlobal('inputs', $app['inputs']);
     $twig->addGlobal('outputs', $app['outputs']);
-    $twig->addGlobal('relations', $app['relations']);
+//    $twig->addGlobal('relations', $app['relations']);
     $twig->addGlobal('available_inputs', $app['input_service']->getAvailableInputs());
     $twig->addGlobal('available_outputs', $app['input_service']->getAvailableInputs());
     

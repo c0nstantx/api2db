@@ -14,12 +14,12 @@
                 <li>{{ output.name }}</li>
             {% endfor %}
         </ul>
-        <h5>Relations <a href="{{ path('relations') }}">(Edit)</a></h5>
-        <ul class="settings-list">
-            {% for relation in relations %}
-                <li>{{ relation }}</li>
-            {% endfor %}
-        </ul>
+        {#<h5>Relations <a href="{{ path('relations') }}">(Edit)</a></h5>#}
+        {#<ul class="settings-list">#}
+            {#{% for relation in relations %}#}
+                {#<li>{{ relation }}</li>#}
+            {#{% endfor %}#}
+        {#</ul>#}
         <br><br>
         <h5 class="text-center"><strong><a href="{{ path('execute') }}"><i class="fa fa-play" aria-hidden="true"></i> EXECUTE</a></strong></h5>
     </div>
