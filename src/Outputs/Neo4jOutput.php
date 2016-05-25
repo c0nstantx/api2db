@@ -36,6 +36,9 @@ class Neo4jOutput extends AbstractOutput
         }
     }
 
+    /**
+     * @param array $data
+     */
     protected function insertData(array $data)
     {
         if (!$this->nodeExists('Owner', ['name' => $data['owner']])) {

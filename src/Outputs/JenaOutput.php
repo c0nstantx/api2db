@@ -43,14 +43,24 @@ class JenaOutput extends AbstractOutput
             $data = $this->processData($transformedData);
             $query .= "PREFIX subjects_ns: <http://custom/ns/subjects#>\nPREFIX relation_ns: <http://custom/ns/relations#>\nPREFIX object_ns: <http://custom/ns/objects#>\nINSERT DATA { \n";
             foreach ($data as $pData) {
-                $object = $pData['object']['type'] === 'object' ? 'object_ns:'.$pData['object']['value'] : "'".$pData['object']['value']."'";
+                $object = $pData['object']['type'] === 'object' ? 'object_ns:'.$this->canonicalize($pData['object']['value']) : "'".$pData['object']['value']."'";
                 $object = $this->sanitize($object);
-                $query .= "\tsubjects_ns:{$pData['subject']} relation_ns:{$pData['predicate']} $object. \n";
+                $query .= "\tsubjects_ns:{$this->canonicalize($pData['subject'])} relation_ns:{$pData['predicate']} $object. \n";
             }
             $query .= '}';
         }
 
         return $query;
+    }
+
+    /**
+     * @param string $value
+     *
+     * @return string
+     */
+    protected function canonicalize($value)
+    {
+        return strtolower(str_ireplace(' ', '_', $value));
     }
 
     /**
@@ -90,6 +100,19 @@ class JenaOutput extends AbstractOutput
                     ]
                 ];
             }
+            if (isset($d['entities'])) {
+                foreach($d['entities'] as $entity) {
+                    $pData[] = [
+                        'subject' => $d['name'].'_'.$d['id'],
+                        'predicate' => 'REFERS_TO_'.$entity[1],
+                        'object' => [
+                            'type' => 'literal',
+                            'value' => $entity[0]
+                        ]
+                    ];
+                }
+            }
+
         }
 
         return $pData;
