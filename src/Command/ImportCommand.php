@@ -72,16 +72,16 @@ class ImportCommand extends Command
      * @param InputInterface $input
      * @param OutputInterface $output
      */
-    public function execute(InputInterface $input, OutputInterface $output)
+    public function execute(InputInterface $consoleInput, OutputInterface $consoleOutput)
     {
-        $this->debug = (bool)$input->getOption('debug');
+        $this->debug = (bool)$consoleInput->getOption('debug');
         try {
             /* Get all outputs */
             $outputs = $this->outputService->getOutputs(array_keys($this->outputs));
     
             
-            $inputName = $input->getArgument('input');
-            $endpoint = json_decode($input->getOption('endpoint'), true);
+            $inputName = $consoleInput->getArgument('input');
+            $endpoint = json_decode($consoleInput->getOption('endpoint'), true);
     
             $inputDriver = $this->inputService->getInput($inputName);
             $rawData = $inputDriver->get($endpoint['url'], [], []);
@@ -98,7 +98,7 @@ class ImportCommand extends Command
             }
         } catch (\Exception $ex) {
             if ($this->debug) {
-                $output->writeln("ERROR: ".$ex->getMessage());
+                $consoleOutput->writeln("ERROR: ".$ex->getMessage());
             }
             $this->logger->critical($ex);
         }
