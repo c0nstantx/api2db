@@ -62,7 +62,6 @@ class GraphOutputData extends OutputData
     
     protected function transformData()
     {
-//        $this->buildOwnerRelation();
         if (is_array($this->rawData)) {
             $this->parseArrayData($this->rawData);
         } else {

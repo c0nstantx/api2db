@@ -7,7 +7,7 @@
  *
  * Thanks :)
  */
-namespace Inputs;
+namespace Input;
 
 /**
  * Description of FacebookInput
@@ -16,6 +16,7 @@ namespace Inputs;
  */
 class FacebookInput extends Oauth2Input
 {
+    protected $tokenName = 'access_token';
 
     /**
      * Returns the base URL for authorizing a client.
@@ -40,6 +41,17 @@ class FacebookInput extends Oauth2Input
     public function getBaseAccessTokenUrl(array $params = [])
     {
         return 'https://graph.facebook.com/v2.2/oauth/access_token';
+    }
+
+    public function get($url, array $options = [], array $headers = [])
+    {
+        $result = parent::get($url, $options, $headers);
+
+        if (isset($result['data'])) {
+            return $result['data'];
+        }
+        
+        return $result;
     }
 
     public function getName()

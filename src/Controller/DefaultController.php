@@ -61,8 +61,9 @@ class DefaultController
 
         foreach($inputs as $input) {
             $map = $inputService->getInputMap($input->getName());
-            if ($map) {
-                foreach ($map as $endpoint) {
+            if ($map && isset($map['manual'])) {
+                $endpoints = $map['manual'];
+                foreach ($endpoints as $endpoint) {
                     $rawData = $input->get($endpoint['url']);
                     $inputData = [
                         'raw' => $rawData,

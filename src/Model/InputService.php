@@ -21,7 +21,7 @@ use Symfony\Component\HttpFoundation\Request;
  */
 class InputService
 {
-    const INPUT_NAMESPACE = '\\Inputs\\';
+    const INPUT_NAMESPACE = '\\Input\\';
 
     const TIMEOUT_LIMIT = 10;
     

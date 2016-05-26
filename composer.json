@@ -19,7 +19,8 @@
         "graphaware/neo4j-php-client": "^3.3",
         "twig/twig": "^1.24",
         "symfony/twig-bridge": "^3.0",
-        "agentile/php-stanford-nlp": "master-dev"
+        "agentile/php-stanford-nlp": "master-dev",
+        "monolog/monolog": "^1.19"
     },
     "autoload": {
         "psr-4": { "": "src" }

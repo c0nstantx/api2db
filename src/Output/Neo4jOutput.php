@@ -7,7 +7,7 @@
  *
  * Thanks :)
  */
-namespace Outputs;
+namespace Output;
 use Model\OutputData;
 use Neoxygen\NeoClient\Client;
 use Neoxygen\NeoClient\ClientBuilder;

@@ -7,7 +7,7 @@
  *
  * Thanks :)
  */
-namespace Inputs;
+namespace Input;
 
 /**
  * Description of InstagramInput
@@ -48,10 +48,10 @@ class InstagramInput extends Oauth2Input
         $response = parent::get($url, $options, $headers);
 
         if (isset($response['data'])) {
-            return array_slice($response['data'], 0, $limit);
+            return $response['data'];
         }
 
-        return [];
+        return $response;
     }
 
     public function getName()

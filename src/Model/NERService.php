@@ -49,6 +49,10 @@ class NERService
      */
     protected function getEntitiesFromString($string)
     {
+        if (!is_string($string)) {
+            var_dump($string);
+            exit;
+        }
         $tags = $this->ner->tag(explode(' ', $string));
         $entities = [];
         foreach($tags as $tag) {

@@ -7,7 +7,7 @@
  *
  * Thanks :)
  */
-namespace Outputs;
+namespace Output;
 use Exception\OutputUnreachableException;
 use GuzzleHttp\Client;
 use GuzzleHttp\ClientInterface;

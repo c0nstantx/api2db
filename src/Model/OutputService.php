@@ -19,7 +19,7 @@ use Interfaces\OutputInterface;
  */
 class OutputService
 {
-    const OUTPUT_NAMESPACE = '\\Outputs\\';
+    const OUTPUT_NAMESPACE = '\\Output\\';
 
     const TIMEOUT_LIMIT = 2;
     

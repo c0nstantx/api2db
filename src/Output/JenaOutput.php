@@ -7,7 +7,7 @@
  *
  * Thanks :)
  */
-namespace Outputs;
+namespace Output;
 use Model\OutputData;
 use Model\OutputService;
 
@@ -123,12 +123,16 @@ class JenaOutput extends AbstractOutput
      */
     protected function execute($query)
     {
-        $this->client->request('POST', $this->outputEndpoint, [
-            'connect_timeout' => OutputService::TIMEOUT_LIMIT,
-            'form_params' => [
-                'update' => $query
-            ]
-        ]);
+        try {
+            $this->client->request('POST', $this->outputEndpoint, [
+                'connect_timeout' => OutputService::TIMEOUT_LIMIT,
+                'form_params' => [
+                    'update' => $query
+                ]
+            ]);
+        } catch (\Exception $ex) {
+            throw new \RuntimeException("Error while trying to execute query '$query'", 500, $ex);
+        }
     }
 
     /**

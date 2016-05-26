@@ -17,6 +17,11 @@ $app['src_dir'] = $app['root_dir'].'src/';
 $configFile = $app['root_dir'].'app/config/config.yml';
 $app['configuration'] = new \Model\Configuration($app, $configFile);
 
+/* Logger */
+$app->register(new \Silex\Provider\MonologServiceProvider(), [
+    'monolog.logfile' => __DIR__.'/../app/logs/api2db.log'
+]);
+
 /* Twig */
 $app->register(new \Silex\Provider\UrlGeneratorServiceProvider());
 $app->register(new \Silex\Provider\TwigServiceProvider(), [
@@ -25,7 +30,6 @@ $app->register(new \Silex\Provider\TwigServiceProvider(), [
 $app->extend('twig', function($twig, $app) {
     $twig->addGlobal('inputs', $app['inputs']);
     $twig->addGlobal('outputs', $app['outputs']);
-//    $twig->addGlobal('relations', $app['relations']);
     $twig->addGlobal('available_inputs', $app['input_service']->getAvailableInputs());
     $twig->addGlobal('available_outputs', $app['input_service']->getAvailableInputs());
     
@@ -54,6 +58,11 @@ $app['ner_service'] = new \Model\NERService(
     '/Users/kostasx/Downloads/stanford-ner-2015-12-09/lib'
 );
 
+/* Importer service */
+$app['importer_service']  = $app->share(function ($app) {
+    $inputs = $app['input_service']->getInputs(array_keys($app['inputs']));
+    return new \Model\ImporterService($app['input_service'], $app['inputs']);
+});
 $app['router'] = new \Model\Router($app);
 $app['router']->setupRoutes();
 

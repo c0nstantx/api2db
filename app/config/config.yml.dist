@@ -22,8 +22,3 @@ outputs:
     neo4j:
         host: neo_host
         port: 7474
-relations:
-    - 'HAS'
-    - 'BELONGS_TO'
-    - 'CREATED_AT'
-    - 'IS'

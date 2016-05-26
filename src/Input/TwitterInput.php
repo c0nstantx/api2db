@@ -7,7 +7,7 @@
  *
  * Thanks :)
  */
-namespace Inputs;
+namespace Input;
 
 /**
  * Description of TwitterInput
@@ -16,7 +16,6 @@ namespace Inputs;
  */
 class TwitterInput extends Oauth1Input
 {
-
     /**
      * Get the URL for retrieving temporary credentials.
      *

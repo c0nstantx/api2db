@@ -50,8 +50,8 @@ class YmlStorage implements StorageInterface
     public function find($domain = 'default')
     {
         $fileData = $this->getFileData();
-        
-        return isset($fileData[$domain]) ? $fileData[$domain] : null;
+
+        return isset($fileData[$domain]) ? $fileData[$domain] : [];
     }
 
     /**

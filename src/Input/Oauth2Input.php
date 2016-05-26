@@ -7,7 +7,7 @@
  *
  * Thanks :)
  */
-namespace Inputs;
+namespace Input;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\ClientException;
 use Interfaces\InputInterface;
