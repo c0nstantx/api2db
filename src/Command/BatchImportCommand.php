@@ -16,6 +16,7 @@ use Monolog\Logger;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Process\Process;
 
 /**
  * Description of BatchImportCommand
@@ -24,6 +25,8 @@ use Symfony\Component\Console\Output\OutputInterface;
  */
 class BatchImportCommand extends Command
 {
+    const MAX_PROCESSES = 5;
+    
     protected $inputService;
     
     protected $outputService;
@@ -36,10 +39,14 @@ class BatchImportCommand extends Command
     
     protected $outputs;
     
+    protected $debug;
+
+    public static $activeProcesses = [];
+    
     public function __construct(InputService $inputService, 
                                 OutputService $outputService, 
                                 NERService $NERService, Logger $logger,
-                                array $inputs, array $outputs
+                                array $inputs, array $outputs, $debug = false
     )
     {
         parent::__construct();
@@ -49,6 +56,7 @@ class BatchImportCommand extends Command
         $this->logger = $logger;
         $this->inputs = $inputs;
         $this->outputs = $outputs;
+        $this->debug = $debug;
     }
 
     protected function configure()
@@ -65,34 +73,32 @@ class BatchImportCommand extends Command
     {
         $timeStart = microtime(true);
         $output->writeln("Start import...");
+
         /* Get all inputs */
         $inputs = $this->inputService->getInputs(array_keys($this->inputs));
 
-        /* Get all outputs */
-        $outputs = $this->outputService->getOutputs(array_keys($this->outputs));
-
         foreach($inputs as $input) {
-            $map = $this->inputService->getInputMap($input->getName());
-            if ($map) {
+            $inputName = $input->getName();
+            $map = $this->inputService->getInputMap($inputName);
+            if ($map && isset($map['imported'])) {
                 foreach ($map['imported'] as $endpoint) {
-                    $rawData = $input->get($endpoint['url']);
-                    $inputData = [
-                        'raw' => $rawData,
-                        'endpoint' => $endpoint
-                    ];
-
-                    foreach($outputs as $output) {
-                        try {
-                            $data = $this->outputService->getDataAdapter($output, $inputData);
-                            $entities = $this->NERService->getEntities($data);
-                            $data->setEntities($entities);
-                            $output->send($data);
-                        } catch (\Exception $ex) {
-                            var_dump($ex);
-                            exit;
-                            $this->logger->critical($ex);
+                    while(count(self::$activeProcesses) >= self::MAX_PROCESSES) {
+                        foreach(self::$activeProcesses as $pId => $proc) {
+                            if ($proc->isSuccessful()) {
+                                unset(self::$activeProcesses[$pId]);
+                                $this->logger->debug("Process ($pId) finished\n");
+                            }
                         }
                     }
+                    self::$activeProcesses++;
+                    if ($this->debug) {
+                        $output->writeln("$inputName: Reading '{$endpoint['url']}'");
+                        $this->logger->debug("$inputName: Reading '{$endpoint['url']}'");
+                    }
+                    $command = 'php app/console.php api2db:import:endpoint '.$inputName.' --endpoint "'. addslashes(json_encode($endpoint)).'"';
+                    $process = new Process($command);
+                    $process->start();
+                    self::$activeProcesses[$process->getPid()] = $process;
                 }
             }
         }

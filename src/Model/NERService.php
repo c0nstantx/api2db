@@ -49,14 +49,11 @@ class NERService
      */
     protected function getEntitiesFromString($string)
     {
-        if (!is_string($string)) {
-            var_dump($string);
-            exit;
-        }
         $tags = $this->ner->tag(explode(' ', $string));
         $entities = [];
         foreach($tags as $tag) {
             if ($tag[1] !== 'O') {
+                $tag[0] = addslashes($tag[0]);
                 $entities[] = $tag;
             }
         }
