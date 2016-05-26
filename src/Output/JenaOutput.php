@@ -45,7 +45,9 @@ class JenaOutput extends AbstractOutput
             foreach ($data as $pData) {
                 $object = $pData['object']['type'] === 'object' ? 'object_ns:'.$this->canonicalize($pData['object']['value']) : "'".$pData['object']['value']."'";
                 $object = $this->sanitize($object);
-                $query .= "\tsubjects_ns:{$this->canonicalize($pData['subject'])} relation_ns:{$pData['predicate']} $object. \n";
+                $subject = $this->canonicalize($pData['subject']);
+                $subject = $this->sanitize($subject);
+                $query .= "\tsubjects_ns:$subject relation_ns:{$pData['predicate']} $object. \n";
             }
             $query .= '}';
         }
@@ -142,6 +144,9 @@ class JenaOutput extends AbstractOutput
      */
     protected function sanitize($content)
     {
-        return str_replace("\n", "", $content);
+        $content = str_replace("\n", "", $content);
+        $content = str_replace(".", "", $content);
+
+        return $content;
     }
 }
