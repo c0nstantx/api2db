@@ -10,7 +10,6 @@ $consoleApp->add(new \Command\ImportNamesCommand($app['importer_service']));
 $consoleApp->add(new \Command\BatchImportCommand(
     $app['input_service'],
     $app['output_service'],
-    $app['ner_service'],
     $app['monolog'],
     $app['inputs'],
     $app['outputs'],

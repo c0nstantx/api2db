@@ -19,7 +19,8 @@ $app['configuration'] = new \Model\Configuration($app, $configFile);
 
 /* Logger */
 $app->register(new \Silex\Provider\MonologServiceProvider(), [
-    'monolog.logfile' => __DIR__.'/../app/logs/api2db.log'
+    'monolog.logfile' => __DIR__.'/../app/logs/api2db.log',
+    'monolog.name' => 'api2db'
 ]);
 
 /* Twig */
