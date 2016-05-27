@@ -62,6 +62,9 @@ class FacebookImporter implements ImporterInterface
         ], []);
 
         if (is_array($results)) {
+            if (isset($results['error'])) {
+                throw new \RuntimeException($results['error']['message']);
+            }
             return $results;
         }
         

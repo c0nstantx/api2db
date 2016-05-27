@@ -78,6 +78,7 @@ class ImportNamesCommand extends Command
             if ($this->debug) {
                 $output->writeln("ERROR: ".$ex->getMessage());
             }
+            $this->logger->critical($ex);
         }
         $output->writeln("Time elapsed: ".(microtime(true) - $timeStart).' seconds');
     }
