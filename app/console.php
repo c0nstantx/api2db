@@ -14,14 +14,13 @@ $consoleApp->add(new \Command\BatchImportCommand(
     $app['monolog'],
     $app['inputs'],
     $app['outputs'],
-    $app['debug']
+    $app['root_dir'].'/app'
 ));
 $consoleApp->add(new \Command\ImportCommand(
     $app['input_service'],
     $app['output_service'],
     $app['ner_service'],
     $app['monolog'],
-    $app['outputs'],
-    $app['debug']
+    $app['outputs']
 ));
 $consoleApp->run();

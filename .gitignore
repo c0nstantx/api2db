@@ -1,6 +1,7 @@
 /app/config/config.yml
 /app/config/input_map.yml
 /app/logs/*
+/app/pid
 /.idea/
 /vendor/
 composer.lock

@@ -44,7 +44,6 @@ class ImportNamesCommand extends Command
     protected function configure()
     {
         $this->setName("api2db:import:names")
-            ->addOption('clear', null, InputOption::VALUE_NONE, 'Clear the imported endpoints')
             ->addOption('update', null, InputOption::VALUE_NONE, 'Update the imported endpoints if the same is found')
             ->addOption('debug', null, InputOption::VALUE_NONE, 'Display and log debug information')
             ->addArgument('file', InputArgument::REQUIRED, 'The file location with a list of names (one name per line)')
@@ -66,14 +65,9 @@ class ImportNamesCommand extends Command
                 throw new FileNotFoundException($file);
             }
             $names = $this->parseFile($file);
-            if ((bool)$input->getOption('clear')) {
-                $this->importerService->clearNames();
-                $output->writeln("Endpoints cleared");
-            } else {
-                $update = (bool)$input->getOption('update');
-                $this->importerService->importNames($names, $update);
-                $output->writeln(count($names)." name(s) are imported!");
-            }
+            $update = (bool)$input->getOption('update');
+            $this->importerService->importNames($names, $update);
+            $output->writeln(count($names)." name(s) are imported!");
         } catch (\Exception $ex) {
             if ($this->debug) {
                 $output->writeln("ERROR: ".$ex->getMessage());

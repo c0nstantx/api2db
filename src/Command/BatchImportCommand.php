@@ -16,6 +16,7 @@ use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Console\Question\ConfirmationQuestion;
 use Symfony\Component\Process\Process;
 
 /**
@@ -42,6 +43,9 @@ class BatchImportCommand extends Command
     /** @var array */
     protected $outputs;
 
+    /** @var string */
+    protected $procPath;
+
     /** @var OutputInterface */
     protected $consoleOutput;
 
@@ -60,7 +64,7 @@ class BatchImportCommand extends Command
     public function __construct(InputService $inputService, 
                                 OutputService $outputService, 
                                 Logger $logger, array $inputs, 
-                                array $outputs
+                                array $outputs, $procPath
     )
     {
         parent::__construct();
@@ -69,6 +73,7 @@ class BatchImportCommand extends Command
         $this->logger = $logger;
         $this->inputs = $inputs;
         $this->outputs = $outputs;
+        $this->procPath = $procPath;
     }
 
     protected function configure()
@@ -86,6 +91,12 @@ class BatchImportCommand extends Command
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
+        if (!$this->proceedProcess($input, $output)) {
+            return 1;
+        }
+        $myPid = getmypid();
+        $this->saveProcess($myPid);
+
         $timeStart = microtime(true);
         $this->consoleOutput = $output;
         $this->debug = (bool)$input->getOption('debug');
@@ -109,6 +120,7 @@ class BatchImportCommand extends Command
             }
             $this->logger->critical($ex);
         }
+        $this->clearProcess($myPid);
         $output->writeln("Time elapsed: ".$this->getTimeElapsed($timeStart));
     }
 
@@ -191,5 +203,66 @@ class BatchImportCommand extends Command
         }
 
         return "$days days, $hours:$mins:$secs";
+    }
+
+    /**
+     * @param InputInterface $input
+     * @param OutputInterface $output
+     *
+     * @return bool
+     */
+    protected function proceedProcess(InputInterface $input, OutputInterface $output)
+    {
+        $procFile = $this->procPath.'/pid';
+        if (file_exists($procFile)) {
+            $running = [];
+            $procs = explode("\n", trim(file_get_contents($procFile)));
+            foreach($procs as $proc) {
+                $subProc = new Process("ps -p $proc -o comm=");
+                $subProc->run(function($type, $buffer) use ($proc, &$running) {
+                    if ($type === Process::OUT) {
+                        $running[] = (int)$proc;
+                    }
+                });
+            }
+
+            if (count($running)) {
+                $helper = $this->getHelper('question');
+                $question = new ConfirmationQuestion('There are current process running. Are you sure you wish to continue? (y/n)', false);
+
+                if (!$helper->ask($input, $output, $question)) {
+                    return false;
+                }
+                return true;
+            }
+        }
+
+        return true;
+    }
+
+    /**
+     * @param int $pId
+     */
+    protected function saveProcess($pId)
+    {
+        $procFile = $this->procPath.'/pid';
+        if (file_exists($procFile)) {
+            $procs = file_get_contents($procFile);
+            file_put_contents($procFile, "$procs\n$pId");
+        } else {
+            file_put_contents($procFile, $pId);
+        }
+    }
+
+    protected function clearProcess($pId)
+    {
+        $procFile = $this->procPath.'/pid';
+        if (file_exists($procFile)) {
+            $procs = explode("\n", trim(file_get_contents($procFile)));
+            if ($key = array_search($pId, $procs)) {
+                unset($procs[$key]);
+            }
+            file_put_contents($procFile, implode("\n", $procs));
+        }
     }
 }
