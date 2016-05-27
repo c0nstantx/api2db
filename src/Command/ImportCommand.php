@@ -63,6 +63,7 @@ class ImportCommand extends Command
         $this->setName("api2db:import:endpoint")
             ->addOption('endpoint', null, InputOption::VALUE_REQUIRED, 'The requested endpoint data as JSON string')
             ->addOption('debug', null, InputOption::VALUE_NONE, 'Display and log debug information')
+            ->addOption('disable-ner', null, InputOption::VALUE_NONE, 'Disable NER parsing')
             ->addArgument('input', InputArgument::REQUIRED, 'The name of input (ex. twitter, facebook etc.)')
             ->setDescription("Import names to input endpoints");
         
@@ -89,11 +90,14 @@ class ImportCommand extends Command
                 'raw' => $rawData,
                 'endpoint' => $endpoint
             ];
-    
+
+            $disableNER = (bool)$consoleInput->getOption('disable-ner');
             foreach($outputs as $output) {
                 $data = $this->outputService->getDataAdapter($output, $inputData);
-                $entities = $this->NERService->getEntities($data);
-                $data->setEntities($entities);
+                if (!$disableNER) {
+                    $entities = $this->NERService->getEntities($data);
+                    $data->setEntities($entities);
+                }
                 $output->send($data);
             }
         } catch (\Exception $ex) {

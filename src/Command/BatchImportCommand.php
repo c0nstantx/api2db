@@ -51,9 +51,12 @@ class BatchImportCommand extends Command
     /** @var bool */
     protected $debug = false;
 
+    /** @var bool */
+    protected $disableNER = false;
+
     /** @var array */
     public static $activeProcesses = [];
-    
+
     public function __construct(InputService $inputService, 
                                 OutputService $outputService, 
                                 Logger $logger, array $inputs, 
@@ -73,6 +76,7 @@ class BatchImportCommand extends Command
         $this->setName("api2db:import:batch")
             ->addOption('debug', null, InputOption::VALUE_NONE, 'Display and log debug information')
             ->addOption('max-procs', null, InputOption::VALUE_OPTIONAL, 'Define the maximum number of running processes', self::DEFAULT_MAX_PROCESSES)
+            ->addOption('disable-ner', null, InputOption::VALUE_NONE, 'Disable NER parsing')
             ->setDescription("Import data from input endpoints");
     }
 
@@ -89,6 +93,7 @@ class BatchImportCommand extends Command
         if ($this->maxProcs < 1) {
             $this->maxProcs = 1;
         }
+        $this->disableNER = (bool)$input->getOption('disable-ner');
         $output->writeln("Start import...");
         try {
             /* Get all inputs */
@@ -116,29 +121,48 @@ class BatchImportCommand extends Command
         $map = $this->inputService->getInputMap($inputName);
         if ($map && isset($map['imported'])) {
             foreach ($map['imported'] as $endpoint) {
-                while(count(self::$activeProcesses) >= $this->maxProcs) {
-                    foreach(self::$activeProcesses as $pId => $proc) {
-                        if ($proc->isSuccessful()) {
-                            $this->consoleOutput->write($proc->getOutput());
-                            unset(self::$activeProcesses[$pId]);
-                            $this->logger->debug("Process ($pId) finished\n");
-                        }
-                    }
-                }
+                $this->waitProcesses($this->maxProcs - 1);
                 self::$activeProcesses++;
                 if ($this->debug) {
                     $this->consoleOutput->writeln("$inputName: Reading '{$endpoint['url']}'");
                     $this->logger->debug("$inputName: Reading '{$endpoint['url']}'");
                 }
-                $command = 'php app/console.php api2db:import:endpoint '.$inputName.' --endpoint "'. addslashes(json_encode($endpoint)).'"';
+                $command = 'php app/console.php api2db:import:endpoint '.$inputName
+                    .' --endpoint "'. addslashes(json_encode($endpoint)).'"';
                 if ($this->debug) {
                     $command .= ' --debug';
+                }
+                if ($this->disableNER) {
+                    $command .= ' --disable-ner';
                 }
                 $process = new Process($command);
                 $process->start();
                 self::$activeProcesses[$process->getPid()] = $process;
             }
+            $this->waitProcesses(0);
         }
+    }
+
+    /**
+     * @param int $limit
+     */
+    protected function waitProcesses($limit)
+    {
+        while(count(self::$activeProcesses) > $limit) {
+            foreach(self::$activeProcesses as $pId => $proc) {
+                if ($proc->isSuccessful()) {
+                    $this->consoleOutput->write($proc->getOutput());
+                    unset(self::$activeProcesses[$pId]);
+                    if ($this->debug) {
+                        $message = "Process ($pId) finished";
+                        $this->consoleOutput->writeln($message);
+                        $this->logger->debug("$message\n");
+                    }
+                }
+            }
+        }
+
+        return;
     }
 
 }
