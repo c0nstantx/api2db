@@ -123,10 +123,6 @@ class BatchImportCommand extends Command
             foreach ($map['imported'] as $endpoint) {
                 $this->waitProcesses($this->maxProcs - 1);
                 self::$activeProcesses++;
-                if ($this->debug) {
-                    $this->consoleOutput->writeln("$inputName: Reading '{$endpoint['url']}'");
-                    $this->logger->debug("$inputName: Reading '{$endpoint['url']}'");
-                }
                 $command = 'php app/console.php api2db:import:endpoint '.$inputName
                     .' --endpoint "'. addslashes(json_encode($endpoint)).'"';
                 if ($this->debug) {
@@ -137,7 +133,13 @@ class BatchImportCommand extends Command
                 }
                 $process = new Process($command);
                 $process->start();
-                self::$activeProcesses[$process->getPid()] = $process;
+                $pId = $process->getPid();
+                self::$activeProcesses[$pId] = $process;
+                if ($this->debug) {
+                    $message = "$inputName: Reading '{$endpoint['url']}' (Process: $pId)";
+                    $this->consoleOutput->writeln($message);
+                    $this->logger->debug($message);
+                }
             }
             $this->waitProcesses(0);
         }
