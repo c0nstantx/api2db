@@ -17,5 +17,5 @@ namespace Interfaces;
  */
 interface ImporterInterface
 {
-    public function import(array $names);
+    public function import(array $names, $update = false);
 }

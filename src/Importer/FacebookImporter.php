@@ -31,14 +31,22 @@ class FacebookImporter implements ImporterInterface
         $this->input = $inputService->getInput('facebook');
     }
 
+    public function clear()
+    {
+        $map = $this->inputService->getInputMap('facebook');
+        unset($map['imported']);
+        $this->inputService->updateInputMap('facebook', $map);
+    }
+
     /**
      * @param array $names
+     * @param bool $update
      */
-    public function import(array $names)
+    public function import(array $names, $update = false)
     {
         foreach($names as $name) {
             $results = $this->search($name);
-            $this->saveResults($results);
+            $this->saveResults($results, $update);
         }
     }
 
@@ -59,12 +67,16 @@ class FacebookImporter implements ImporterInterface
         
         return [];
     }
-    
-    protected function saveResults(array $results)
+
+    /**
+     * @param array $results
+     * @param bool $update
+     */
+    protected function saveResults(array $results, $update = false)
     {
         $map = $this->inputService->getInputMap('facebook');
         foreach($results as $result) {
-            if (!isset($map['imported'][$result['id']])) {
+            if ($update || !isset($map['imported'][$result['id']])) {
                 $map['imported'][$result['id']] = $this->buildObject($result['name'], $result['id']);
             }
         }

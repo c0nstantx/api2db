@@ -31,14 +31,22 @@ class InstagramImporter implements ImporterInterface
         $this->input = $inputService->getInput('instagram');
     }
 
+    public function clear()
+    {
+        $map = $this->inputService->getInputMap('instagram');
+        unset($map['imported']);
+        $this->inputService->updateInputMap('instagram', $map);
+    }
+
     /**
      * @param array $names
+     * @param bool $update
      */
-    public function import(array $names)
+    public function import(array $names, $update = false)
     {
         foreach($names as $name) {
             $results = $this->search($name);
-            $this->saveResults($results);
+            $this->saveResults($results, $update);
         }
     }
 
@@ -62,24 +70,26 @@ class InstagramImporter implements ImporterInterface
 
     /**
      * @param array $results
+     * @param bool $update
      */
-    protected function saveResults(array $results)
+    protected function saveResults(array $results, $update = false)
     {
         foreach($results as $result) {
             $media = $this->getUserMedia($result['id']);
-            $this->saveMedia($result['full_name'], $media);
+            $this->saveMedia($result['full_name'], $media, $update);
         }
     }
 
     /**
      * @param string $name
      * @param array|\Generator $media
+     * @param bool $update
      */
-    protected function saveMedia($name, $media)
+    protected function saveMedia($name, $media, $update = false)
     {
         $map = $this->inputService->getInputMap('instagram');
         foreach($media as $medium) {
-            if (!isset($map['imported'][$medium])) {
+            if ($update || !isset($map['imported'][$medium])) {
                 $map['imported'][$medium] = $this->buildMediaObject($name, $medium);
             }
         }

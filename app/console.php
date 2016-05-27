@@ -6,7 +6,8 @@ $debug = true;
 $app = require __DIR__.'/../src/app.php';
 
 $consoleApp = new \Symfony\Component\Console\Application();
-$consoleApp->add(new \Command\ImportNamesCommand($app['importer_service']));
+$consoleApp->add(new \Command\ImportNamesCommand($app['importer_service'], $app['monolog']));
+$consoleApp->add(new \Command\ClearEndpointsCommand($app['importer_service'], $app['monolog']));
 $consoleApp->add(new \Command\BatchImportCommand(
     $app['input_service'],
     $app['output_service'],

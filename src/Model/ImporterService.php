@@ -31,13 +31,19 @@ class ImporterService
         $this->importers = $this->buildImporters(array_keys($inputs));
     }
 
-    public function importNames(array $names)
+    public function importNames(array $names, $update = false)
     {
         foreach($this->importers as $importer) {
-            $importer->import($names);
+            $importer->import($names, $update);
         }
     }
-    
+
+    public function clearNames()
+    {
+        foreach($this->importers as $importer) {
+            $importer->clear();
+        }
+    }
     /**
      * @param array $inputs
      *

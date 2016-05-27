@@ -31,14 +31,22 @@ class TwitterImporter implements ImporterInterface
         $this->input = $inputService->getInput('twitter');
     }
 
+    public function clear()
+    {
+        $map = $this->inputService->getInputMap('twitter');
+        unset($map['imported']);
+        $this->inputService->updateInputMap('twitter', $map);
+    }
+
     /**
      * @param array $names
+     * @param bool $update
      */
-    public function import(array $names)
+    public function import(array $names, $update = false)
     {
         foreach($names as $name) {
             $results = $this->search($name);
-            $this->saveResults($results);
+            $this->saveResults($results, $update);
         }
     }
 
@@ -61,12 +69,13 @@ class TwitterImporter implements ImporterInterface
 
     /**
      * @param array $results
+     * @param bool $update
      */
-    protected function saveResults(array $results)
+    protected function saveResults(array $results, $update = false)
     {
         foreach($results as $result) {
             if (isset($result['screen_name'])) {
-                $this->saveHandle($result['name'], $result['screen_name']);
+                $this->saveHandle($result['name'], $result['screen_name'], $update);
             }
         }
     }
@@ -74,11 +83,12 @@ class TwitterImporter implements ImporterInterface
     /**
      * @param string $name
      * @param string $handle
+     * @param bool $update
      */
-    protected function saveHandle($name, $handle)
+    protected function saveHandle($name, $handle, $update = false)
     {
         $map = $this->inputService->getInputMap('twitter');
-        if (!isset($map['imported'][$handle])) {
+        if ($update || !isset($map['imported'][$handle])) {
             $map['imported'][$handle] = $this->buildHandleObject($name, $handle);
         }
         $this->inputService->updateInputMap('twitter', $map);

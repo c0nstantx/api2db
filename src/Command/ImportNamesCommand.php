@@ -10,9 +10,11 @@
 
 namespace Command;
 use Model\ImporterService;
+use Monolog\Logger;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Filesystem\Exception\FileNotFoundException;
 
@@ -23,17 +25,28 @@ use Symfony\Component\Filesystem\Exception\FileNotFoundException;
  */
 class ImportNamesCommand extends Command
 {
+    /** @var ImporterService */
     protected $importerService;
+
+    /** @var Logger */
+    protected $logger;
+
+    /** @var bool */
+    protected $debug;
     
-    public function __construct(ImporterService $importerService)
+    public function __construct(ImporterService $importerService, Logger $logger)
     {
         parent::__construct();
         $this->importerService = $importerService;
+        $this->logger = $logger;
     }
 
     protected function configure()
     {
         $this->setName("api2db:import:names")
+            ->addOption('clear', null, InputOption::VALUE_NONE, 'Clear the imported endpoints')
+            ->addOption('update', null, InputOption::VALUE_NONE, 'Update the imported endpoints if the same is found')
+            ->addOption('debug', null, InputOption::VALUE_NONE, 'Display and log debug information')
             ->addArgument('file', InputArgument::REQUIRED, 'The file location with a list of names (one name per line)')
             ->setDescription("Import names to input endpoints");
     }
@@ -44,19 +57,27 @@ class ImportNamesCommand extends Command
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
+        $this->debug = (bool)$input->getOption('debug');
         $timeStart = microtime(true);
-        $file = $input->getArgument('file');
-        if (!file_exists($file)) {
-            throw new FileNotFoundException($file);
-        }
 
-        $names = $this->parseFile($file);
         try {
-            $this->importerService->importNames($names);
-            $output->writeln(count($names)." name(s) are imported!");
+            $file = $input->getArgument('file');
+            if (!file_exists($file)) {
+                throw new FileNotFoundException($file);
+            }
+            $names = $this->parseFile($file);
+            if ((bool)$input->getOption('clear')) {
+                $this->importerService->clearNames();
+                $output->writeln("Endpoints cleared");
+            } else {
+                $update = (bool)$input->getOption('update');
+                $this->importerService->importNames($names, $update);
+                $output->writeln(count($names)." name(s) are imported!");
+            }
         } catch (\Exception $ex) {
-            var_dump($ex);
-            exit;
+            if ($this->debug) {
+                $output->writeln("ERROR: ".$ex->getMessage());
+            }
         }
         $output->writeln("Time elapsed: ".(microtime(true) - $timeStart).' seconds');
     }
