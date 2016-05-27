@@ -109,7 +109,7 @@ class BatchImportCommand extends Command
             }
             $this->logger->critical($ex);
         }
-        $output->writeln("Time elapsed: ".(microtime(true) - $timeStart).' seconds');
+        $output->writeln("Time elapsed: ".$this->getTimeElapsed($timeStart));
     }
 
     /**
@@ -167,4 +167,29 @@ class BatchImportCommand extends Command
         return;
     }
 
+    /**
+     * @param float $from
+     *
+     * @return string
+     */
+    protected function getTimeElapsed($from)
+    {
+        $seconds = round(microtime(true) - $from);
+
+        $days = floor($seconds / (3600 * 24));
+        $hours = floor($seconds / 3600 % 24);
+        if ($hours < 10) {
+            $hours = "0$hours";
+        }
+        $mins = floor($seconds / 60 % 60);
+        if ($mins < 10) {
+            $mins = "0$mins";
+        }
+        $secs = floor($seconds % 60);
+        if ($secs < 10) {
+            $secs = "0$secs";
+        }
+
+        return "$days days, $hours:$mins:$secs";
+    }
 }

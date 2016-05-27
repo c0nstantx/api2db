@@ -41,8 +41,12 @@ class Neo4jOutput extends AbstractOutput
      */
     protected function insertData(array $data)
     {
-        if (!$this->nodeExists('Owner', ['name' => $data['owner']])) {
-            $this->createNode('Owner', ['name' => $data['owner']]);
+        $ownerAttrs = [
+            'name' => $data['owner'],
+            'type' => $data['name']
+        ];
+        if (!$this->nodeExists('Owner', $ownerAttrs)) {
+            $this->createNode('Owner', $ownerAttrs);
         }
         if (!$this->nodeExists($data['name'], ['id' => $data['id']])) {
             $attributes = [];

@@ -75,6 +75,14 @@ class JenaOutput extends AbstractOutput
         foreach($data as $d) {
             $pData[] = [
                 'subject' => $d['owner'],
+                'predicate' => 'IS_TYPE',
+                'object' => [
+                    'type' => 'object',
+                    'value' => $d['name']
+                ]
+            ];
+            $pData[] = [
+                'subject' => $d['owner'],
                 'predicate' => $d['relation'],
                 'object' => [
                     'type' => 'object',

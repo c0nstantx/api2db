@@ -20,7 +20,7 @@ abstract class OutputData
     protected $rawData;
 
     /** @var array */
-    protected $transformedData;
+    protected $transformedData = [];
     
     public function __construct($rawData)
     {
@@ -38,7 +38,7 @@ abstract class OutputData
     public function getTransformedData()
     {
         $this->transformData();
-        
+
         return $this->transformedData;
     }
     

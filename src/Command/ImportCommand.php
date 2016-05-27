@@ -79,11 +79,11 @@ class ImportCommand extends Command
         try {
             /* Get all outputs */
             $outputs = $this->outputService->getOutputs(array_keys($this->outputs));
-    
-            
+
+
             $inputName = $consoleInput->getArgument('input');
             $endpoint = json_decode($consoleInput->getOption('endpoint'), true);
-    
+
             $inputDriver = $this->inputService->getInput($inputName);
             $rawData = $inputDriver->get($endpoint['url'], [], []);
             $inputData = [
