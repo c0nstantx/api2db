@@ -226,6 +226,10 @@ class BatchImportCommand extends Command
                 });
             }
 
+            $stopped = array_diff($procs, $running);
+            foreach($stopped as $stop) {
+                $this->clearProcess($stop);
+            }
             if (count($running)) {
                 $helper = $this->getHelper('question');
                 $question = new ConfirmationQuestion('There are current process running. Are you sure you wish to continue? (y/n)', false);
