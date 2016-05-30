@@ -54,9 +54,9 @@ $app['output_service'] = $outputService;
 
 /* NER service */
 $app['ner_service'] = new \Model\NERService(
-    '/Users/kostasx/Downloads/stanford-ner-2015-12-09/classifiers/english.all.3class.distsim.crf.ser.gz', 
-    '/Users/kostasx/Downloads/stanford-ner-2015-12-09/stanford-ner.jar', 
-    '/Users/kostasx/Downloads/stanford-ner-2015-12-09/lib'
+    $app['parameters']['ner_path'].'/classifiers/english.all.3class.distsim.crf.ser.gz',
+    $app['parameters']['ner_path'].'/stanford-ner.jar',
+    $app['parameters']['ner_path'].'/lib'
 );
 
 /* Importer service */
