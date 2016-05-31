@@ -11,6 +11,7 @@ namespace Model;
 use Exception\OutputNotDefinedException;
 use Exception\OutputNotFoundException;
 use Interfaces\OutputInterface;
+use Symfony\Component\HttpFoundation\Request;
 
 /**
  * Description of OutputService
@@ -42,6 +43,78 @@ class OutputService
             }
         }
         $this->outputOptions = $outputOptions;
+    }
+
+    /**
+     * @param Request $request
+     *
+     * @return array
+     */
+    public function getDataFromRequest(Request $request)
+    {
+        $data = [
+            'name' => $request->get('output_name'),
+            'host' => $request->get('output_host'),
+            'port' => $request->get('output_port'),
+        ];
+        if ($request->get('output_id') === 'neo4j') {
+            $data['credentials'] = [
+                'username' => $request->get('output_username'),
+                'password' => $request->get('output_password'),
+            ];
+        }
+
+        if ($request->get('output_id') === 'jena') {
+            $data['path'] = $request->get('input_path');
+        }
+
+        return $data;
+    }
+
+    /**
+     * @param Request $request
+     *
+     * @return array
+     */
+    public function validate(Request $request)
+    {
+        $required = [
+            'output_id',
+            'output_name',
+            'output_host',
+            'output_port',
+        ];
+        $jena = [
+            'output_path',
+        ];
+        $neo4j = [
+            'output_username',
+            'output_password',
+        ];
+
+        $errors = [];
+
+        if ($request->get('output_id') === 'jena') {
+            $required = array_merge($required, $jena);
+        } else if ($request->get('output_id') === 'neo4j') {
+            $required = array_merge($required, $neo4j);
+        }
+
+        foreach($required as $req) {
+            if (!$request->get($req) || $request->get($req) === '') {
+                $errors[] = $req;
+            }
+        }
+
+        return $errors;
+    }
+
+    /**
+     * @return array
+     */
+    public function getAvailableOutputs()
+    {
+        return array_keys(self::$outputMap);
     }
 
     /**

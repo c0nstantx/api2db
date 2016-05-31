@@ -1,0 +1,80 @@
+{% extends 'layouts/layout.html.twig' %}
+
+{% block body %}
+    {% if driver %}
+        <h3>Edit {{ driver }}</h3>
+        <form method="post" action="{{ path('output_update', {'driver': driver}) }}" data-abide>
+    {% else %}
+        {% set output = {'name': '', 'host': '', 'port': '', 'path': '', 'credentials': {'username': '', 'password': ''}}%}
+        <h3>Create new Output</h3>
+        <form method="post" action="{{ path('output_create') }}" data-abide>
+    {% endif %}
+        <div class="grid-block">
+            <div class="small-12 medium-6 grid-content">
+                <label{% if 'output_id' in errors %} class="is-invalid-label"{% endif %}>Output ID:</label>
+                <select name="output_id">
+                    <option value="">Select type</option>
+                    {% for available_output in available_outputs %}
+                        <option value="{{ available_output }}"{% if app.request.get('output_id') == available_output or driver == available_output%} selected="selected"{% endif %}>{{ available_output }}</option>
+                    {% endfor %}
+                </select>
+                {% if 'output_id' in errors %}
+                    <span class="form-error is-visible" id="uuid">This field is required.</span>
+                {% endif %}
+            </div>
+            <div class="small-12 medium-6 grid-content">
+                <label{% if 'output_name' in errors %} class="is-invalid-label"{% endif %}>Output name:
+                    <input{% if 'output_name' in errors %} class="is-invalid-input"{% endif %} type="text" name="output_name" placeholder="Enter output name (ex. Twitter)" value="{{ app.request.get('output_name', output.name) }}">
+                </label>
+                {% if 'output_name' in errors %}
+                    <span class="form-error is-visible" id="uuid">This field is required.</span>
+                {% endif %}
+            </div>
+            <div class="small-12 medium-6 grid-content">
+                <label{% if 'output_host' in errors %} class="is-invalid-label"{% endif %}>Output host:
+                    <input{% if 'output_host' in errors %} class="is-invalid-input"{% endif %} type="text" name="output_host" placeholder="Enter output host" value="{{ app.request.get('output_host', output.host) }}">
+                </label>
+                {% if 'output_host' in errors %}
+                    <span class="form-error is-visible" id="uuid">This field is required.</span>
+                {% endif %}
+            </div>
+            <div class="small-12 medium-6 grid-content">
+                <label{% if 'output_port' in errors %} class="is-invalid-label"{% endif %}>Output port:
+                    <input{% if 'output_port' in errors %} class="is-invalid-input"{% endif %} type="text" name="output_port" placeholder="Enter output port" value="{{ app.request.get('output_host', output.port) }}">
+                </label>
+                {% if 'output_port' in errors %}
+                    <span class="form-error is-visible" id="uuid">This field is required.</span>
+                {% endif %}
+            </div>
+            {% if output.path is defined %}
+            <div class="small-12 medium-6 grid-content">
+                <label{% if 'output_path' in errors %} class="is-invalid-label"{% endif %}>Output path:
+                    <input{% if 'output_path' in errors %} class="is-invalid-input"{% endif %} type="text" name="output_path" placeholder="Enter output path" value="{{ app.request.get('output_path', output.path) }}">
+                </label>
+                {% if 'output_path' in errors %}
+                    <span class="form-error is-visible" id="uuid">This field is required.</span>
+                {% endif %}
+            </div>
+            {% endif %}
+            {% if output.credentials is defined %}
+            <div class="small-12 medium-6 grid-content">
+                <label{% if 'output_username' in errors %} class="is-invalid-label"{% endif %}>Output username:
+                    <input{% if 'output_username' in errors %} class="is-invalid-input"{% endif %} type="text" name="output_username" placeholder="Enter output username" value="{{ app.request.get('output_username', output.credentials.username) }}">
+                </label>
+                {% if 'output_username' in errors %}
+                    <span class="form-error is-visible" id="uuid">This field is required.</span>
+                {% endif %}
+            </div>
+            <div class="small-12 medium-6 grid-content">
+                <label{% if 'output_password' in errors %} class="is-invalid-label"{% endif %}>Output password:
+                    <input{% if 'output_password' in errors %} class="is-invalid-input"{% endif %} type="password" name="output_password" placeholder="Enter output username" value="{{ app.request.get('output_password', output.credentials.password) }}">
+                </label>
+                {% if 'output_password' in errors %}
+                    <span class="form-error is-visible" id="uuid">This field is required.</span>
+                {% endif %}
+            </div>
+            {% endif %}
+            <input type="submit" class="button" value="{% if driver %}Update{% else %}Create{% endif %}" />
+        </div>
+    </form>
+{% endblock %}

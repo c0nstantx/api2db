@@ -32,7 +32,7 @@ $app->extend('twig', function($twig, $app) {
     $twig->addGlobal('inputs', $app['inputs']);
     $twig->addGlobal('outputs', $app['outputs']);
     $twig->addGlobal('available_inputs', $app['input_service']->getAvailableInputs());
-    $twig->addGlobal('available_outputs', $app['input_service']->getAvailableInputs());
+    $twig->addGlobal('available_outputs', $app['output_service']->getAvailableOutputs());
     
     return $twig;
 });

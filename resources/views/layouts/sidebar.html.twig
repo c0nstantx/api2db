@@ -2,7 +2,8 @@
     <div class="row column" id="header-banner">
         <h5 class="text-center"><strong>api2DB</strong></h5>
         <a href="{{ path('homepage') }}"><img class="logo" src="/images/api2db.svg"></a>
-        <h5>Inputs <a href="{{ path('inputs') }}">(Edit)</a></h5>
+        <h5>Inputs</h5>
+        {#<h5>Inputs <a href="{{ path('inputs') }}">(Edit)</a></h5>#}
         <ul class="settings-list">
             {% for driver, input in inputs %}
                 <li><a href="{{ path('input_view_existing', {'driver': driver}) }}">{{ input.name }}</a></li>
@@ -11,7 +12,8 @@
         <h5>Outputs</h5>
         <ul class="settings-list">
             {% for driver, output in outputs %}
-                <li>{{ output.name }}</li>
+                <li><a href="{{ path('output_view_existing', {'driver': driver}) }}">{{ output.name }}</a></li>
+                {#<li>{{ output.name }}</li>#}
             {% endfor %}
         </ul>
         {#<h5>Relations <a href="{{ path('relations') }}">(Edit)</a></h5>#}
@@ -20,6 +22,7 @@
                 {#<li>{{ relation }}</li>#}
             {#{% endfor %}#}
         {#</ul>#}
+        <h5><a href="">Parameters</a></h5>
         <br><br>
         <h5 class="text-center"><strong><a href="{{ path('execute') }}"><i class="fa fa-play" aria-hidden="true"></i> EXECUTE</a></strong></h5>
     </div>

@@ -207,7 +207,7 @@ class InputController
             $app['configuration']->addInput($inputId, $inputData);
         }
 
-        return new RedirectResponse($app['url_generator']->generate('inputs'));
+        return new RedirectResponse($app['url_generator']->generate('homepage'));
     }
 
     /**

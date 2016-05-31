@@ -67,6 +67,20 @@ class Configuration
     }
 
     /**
+     * @param string $driver
+     * @param array $data
+     *
+     * @return Configuration
+     */
+    public function addOutput($driver, array $data)
+    {
+        $this->config['outputs'][$driver] = $data;
+        $this->saveConfig();
+
+        return $this;
+    }
+
+    /**
      * @param string $relation
      *
      * @return Configuration
