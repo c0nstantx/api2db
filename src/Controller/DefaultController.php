@@ -13,6 +13,7 @@ use Guzzle\Inflection\Inflector;
 use Model\GraphOutputData;
 use Model\NERTagger3;
 use Silex\Application;
+use Symfony\Component\Filesystem\Exception\FileNotFoundException;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -24,6 +25,44 @@ use Symfony\Component\HttpFoundation\Response;
  */
 class DefaultController
 {
+    /**
+     * @param Application $app
+     *
+     * @return Response
+     */
+    public function viewParamsAction(Application $app)
+    {
+        return $app['twig']->render('params.html.twig', [
+            'params' => $app['parameters']
+        ]);
+    }
+
+    /**
+     * @param Request $request
+     * @param Application $app
+     *
+     * @return RedirectResponse
+     */
+    public function updateParamsAction(Request $request, Application $app)
+    {
+        $params = $app['parameters'];
+        foreach ($request->request->all() as $key => $value) {
+            if (isset($params[$key])) {
+                $params[$key] = $value;
+            }
+        }
+        /* Test NER Path */
+        if (!is_file($params['ner_path'].'/classifiers/english.all.3class.distsim.crf.ser.gz')
+            || !is_file($params['ner_path'].'/stanford-ner.jar')
+            || !is_dir($params['ner_path'].'/lib')) {
+            throw new FileNotFoundException("NER path is not valid");
+        }
+
+        $app['configuration']->saveParameters($params);
+
+        return new RedirectResponse($app['url_generator']->generate('homepage'));
+    }
+
     /**
      * @param Application $app
      *

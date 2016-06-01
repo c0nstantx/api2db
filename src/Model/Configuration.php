@@ -38,6 +38,19 @@ class Configuration
     }
 
     /**
+     * @param array $params
+     * 
+     * @return Configuration
+     */
+    public function saveParameters(array $params)
+    {
+        $this->config['parameters'] = $params;
+        $this->saveConfig();
+        
+        return $this;
+    }
+    
+    /**
      * @param string $driver
      *
      * @return Configuration

@@ -1,0 +1,15 @@
+{% extends 'layouts/layout.html.twig' %}
+
+{% block body %}
+    <h3>Parameters</h3>
+    <form method="post" action="{{ path('parameters_update') }}" data-abide>
+    <div class="grid-block">
+        <div class="small-12 medium-6 grid-content">
+            <label for="ner_path">NER executable path:
+                <input type="text" name="ner_path" placeholder="Enter NER executable path (ex. /home/user/path)" value="{{ app.request.get('ner_path', params.ner_path) }}">
+            </label>
+        </div>
+        <input type="submit" class="button" value="Save" />
+    </div>
+    </form>
+{% endblock %}

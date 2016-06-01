@@ -29,6 +29,12 @@ class Router
         $this->app->get('/', 'Controller\\DefaultController::mainAction')
             ->bind('homepage');
 
+        $this->app->get('/params', 'Controller\\DefaultController::viewParamsAction')
+            ->bind('parameters_show');
+
+        $this->app->post('/params', 'Controller\\DefaultController::updateParamsAction')
+            ->bind('parameters_update');
+
         /* Inputs */
         $this->app->get('/inputs', 'Controller\\InputController::inputsAction')
             ->bind('inputs');
