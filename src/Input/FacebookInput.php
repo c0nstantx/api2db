@@ -58,4 +58,21 @@ class FacebookInput extends Oauth2Input
     {
         return 'facebook';
     }
+
+    public function getType()
+    {
+        return 'facebook_post';
+    }
+
+    public function getDefaultMap()
+    {
+        return [
+            'message'
+        ];
+    }
+
+    public function getDefaultId()
+    {
+        return 'id';
+    }
 }

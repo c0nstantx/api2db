@@ -58,4 +58,21 @@ class InstagramInput extends Oauth2Input
     {
         return 'instagram';
     }
+
+    public function getType()
+    {
+        return 'instagram_comment';
+    }
+
+    public function getDefaultMap()
+    {
+        return [
+            'text'
+        ];
+    }
+
+    public function getDefaultId()
+    {
+        return 'id';
+    }
 }

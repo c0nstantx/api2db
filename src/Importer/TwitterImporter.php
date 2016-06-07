@@ -105,7 +105,7 @@ class TwitterImporter implements ImporterInterface
         return [
             'url' => $this->buildHandleUrl($handle),
             'owner' => $name,
-            'object' => 'tweet',
+            'object' => $this->input->getType(),
             'id' => 'id_str',
             'map' => [
                 'text'

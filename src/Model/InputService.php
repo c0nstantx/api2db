@@ -11,6 +11,7 @@ namespace Model;
 use Exception\InputNotDefinedException;
 use Exception\InputNotFoundException;
 use Interfaces\InputInterface;
+use Interfaces\OutputInterface;
 use Interfaces\StorageInterface;
 use Symfony\Component\HttpFoundation\Request;
 
@@ -50,7 +51,7 @@ class InputService
         $this->inputOptions = $inputOptions;
         $this->storage = $storage;
     }
-
+    
     /**
      * @param string $driver
      * @param array $map

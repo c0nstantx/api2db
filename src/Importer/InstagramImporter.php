@@ -107,7 +107,7 @@ class InstagramImporter implements ImporterInterface
         return [
             'url' => $this->buildCommentUrl($mediumId),
             'owner' => $name,
-            'object' => 'instagram_comment',
+            'object' => $this->input->getType(),
             'id' => 'id',
             'map' => [
                 'text'

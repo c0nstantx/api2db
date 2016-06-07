@@ -8,6 +8,8 @@
  * Thanks :)
  */
 namespace Output;
+use Interfaces\InputInterface;
+use Model\GraphOutputData;
 use Model\OutputData;
 use Neoxygen\NeoClient\Client;
 use Neoxygen\NeoClient\ClientBuilder;
@@ -34,6 +36,38 @@ class Neo4jOutput extends AbstractOutput
         foreach($transformedData as $tData) {
             $this->insertData($tData);
         }
+    }
+
+    /**
+     * @param array $owner
+     * @param array $input
+     * 
+     * @return GraphOutputData
+     */
+    public function reconstructData(array $owner, array $input)
+    {
+        $endpointData = [
+            'url' => '',
+            'owner' => $owner['name'],
+            'object' => $owner['type'],
+            'id' => $owner['id'],
+            'map' => $owner['map']
+        ];
+        
+        return new GraphOutputData([$input], $endpointData);
+    }
+
+    /**
+     * @param InputInterface $input
+     *
+     * @return array|null
+     */
+    public function fetchData(InputInterface $input)
+    {
+        $query = "MATCH (owner)-[]->(input:{$input->getType()}) RETURN owner,input";
+        $this->neoClient->sendCypherQuery($query);
+
+        return $this->neoClient->getRows();
     }
 
     /**

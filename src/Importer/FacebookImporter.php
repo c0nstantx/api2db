@@ -98,7 +98,7 @@ class FacebookImporter implements ImporterInterface
         return [
             'url' => $this->buildUrl($id),
             'owner' => $name,
-            'object' => 'facebook_post',
+            'object' => $this->input->getType(),
             'id' => 'id',
             'map' => [
                 'message'

@@ -1,7 +1,11 @@
 <?php
 /**
- * This file is part of Rocketgraph service
- * <http://www.rocketgraph.com>
+ * (c) Konstantine Christofilos <kostas.christofilos@gmail.com>
+ *
+ * For the full copyright and license information, please view the
+ * LICENSE file that was distributed with this source code.
+ *
+ * Thanks :)
  */
 
 namespace Model;
@@ -9,7 +13,7 @@ namespace Model;
 /**
  * Description of NERService
  *
- * @author K.Christofilos <kostas.christofilos@rocketgraph.com>
+ * @author Konstantine Christofilos <kostas.christofilos@gmail.com>
  */
 class NERService
 {

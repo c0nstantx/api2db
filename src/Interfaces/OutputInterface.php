@@ -47,4 +47,13 @@ interface OutputInterface
      * @return string
      */
     public function getName();
+
+    /**
+     * Select input type data from output
+     * 
+     * @param InputInterface $input
+     * 
+     * @return array
+     */
+    public function fetchData(InputInterface $input);
 }

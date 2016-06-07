@@ -40,4 +40,25 @@ interface InputInterface
      * @return string
      */
     public function getName();
+
+    /**
+     * Returns input type
+     * 
+     * @return string
+     */
+    public function getType();
+
+    /**
+     * Returns default input map
+     * 
+     * @return mixed
+     */
+    public function getDefaultMap();
+
+    /**
+     * Returns default input identifier
+     * 
+     * @return string
+     */
+    public function getDefaultId();
 }

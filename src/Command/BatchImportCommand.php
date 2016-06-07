@@ -10,13 +10,10 @@
 
 namespace Command;
 use Model\InputService;
-use Model\OutputService;
 use Monolog\Logger;
-use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
-use Symfony\Component\Console\Question\ConfirmationQuestion;
 use Symfony\Component\Process\Process;
 
 /**
@@ -24,56 +21,28 @@ use Symfony\Component\Process\Process;
  *
  * @author Konstantine Christofilos <kostas.christofilos@gmail.com>
  */
-class BatchImportCommand extends Command
+class BatchImportCommand extends MultiThreadCommand
 {
-    const DEFAULT_MAX_PROCESSES = 5;
-    
     /** @var InputService */
     protected $inputService;
     
-    /** @var OutputService */
-    protected $outputService;
-
-    /** @var Logger */
-    protected $logger;
-    
     /** @var array */
     protected $inputs;
-    
-    /** @var array */
-    protected $outputs;
-
-    /** @var string */
-    protected $procPath;
 
     /** @var OutputInterface */
     protected $consoleOutput;
 
-    /** @var int */
-    protected $maxProcs;
-    
-    /** @var bool */
-    protected $debug = false;
-
     /** @var bool */
     protected $disableNER = false;
 
-    /** @var array */
-    public static $activeProcesses = [];
-
-    public function __construct(InputService $inputService, 
-                                OutputService $outputService, 
-                                Logger $logger, array $inputs, 
-                                array $outputs, $procPath
+    public function __construct(InputService $inputService, Logger $logger, 
+                                array $inputs, $procPath
     )
     {
-        parent::__construct();
+        parent::__construct($logger, $procPath);
         $this->inputService = $inputService;
-        $this->outputService = $outputService;
         $this->logger = $logger;
         $this->inputs = $inputs;
-        $this->outputs = $outputs;
-        $this->procPath = $procPath;
     }
 
     protected function configure()
@@ -91,6 +60,7 @@ class BatchImportCommand extends Command
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
+        parent::execute($input, $output);
         if (!$this->proceedProcess($input, $output)) {
             return 1;
         }
@@ -122,6 +92,8 @@ class BatchImportCommand extends Command
         }
         $this->clearProcess($myPid);
         $output->writeln("Time elapsed: ".$this->getTimeElapsed($timeStart));
+        
+        return true;
     }
 
     /**
@@ -154,119 +126,6 @@ class BatchImportCommand extends Command
                 }
             }
             $this->waitProcesses(0);
-        }
-    }
-
-    /**
-     * @param int $limit
-     */
-    protected function waitProcesses($limit)
-    {
-        while(count(self::$activeProcesses) > $limit) {
-            foreach(self::$activeProcesses as $pId => $proc) {
-                if ($proc->isSuccessful()) {
-                    $this->consoleOutput->write($proc->getOutput());
-                    unset(self::$activeProcesses[$pId]);
-                    if ($this->debug) {
-                        $message = "Process ($pId) finished";
-                        $this->consoleOutput->writeln($message);
-                        $this->logger->debug("$message\n");
-                    }
-                }
-            }
-        }
-
-        return;
-    }
-
-    /**
-     * @param float $from
-     *
-     * @return string
-     */
-    protected function getTimeElapsed($from)
-    {
-        $seconds = round(microtime(true) - $from);
-
-        $days = floor($seconds / (3600 * 24));
-        $hours = floor($seconds / 3600 % 24);
-        if ($hours < 10) {
-            $hours = "0$hours";
-        }
-        $mins = floor($seconds / 60 % 60);
-        if ($mins < 10) {
-            $mins = "0$mins";
-        }
-        $secs = floor($seconds % 60);
-        if ($secs < 10) {
-            $secs = "0$secs";
-        }
-
-        return "$days days, $hours:$mins:$secs";
-    }
-
-    /**
-     * @param InputInterface $input
-     * @param OutputInterface $output
-     *
-     * @return bool
-     */
-    protected function proceedProcess(InputInterface $input, OutputInterface $output)
-    {
-        $procFile = $this->procPath.'/pid';
-        if (file_exists($procFile)) {
-            $running = [];
-            $procs = explode("\n", trim(file_get_contents($procFile)));
-            foreach($procs as $proc) {
-                $subProc = new Process("ps -p $proc -o comm=");
-                $subProc->run(function($type, $buffer) use ($proc, &$running) {
-                    if ($type === Process::OUT) {
-                        $running[] = (int)$proc;
-                    }
-                });
-            }
-
-            $stopped = array_diff($procs, $running);
-            foreach($stopped as $stop) {
-                $this->clearProcess($stop);
-            }
-            if (count($running)) {
-                $helper = $this->getHelper('question');
-                $question = new ConfirmationQuestion('There are current process running. Are you sure you wish to continue? (y/n)', false);
-
-                if (!$helper->ask($input, $output, $question)) {
-                    return false;
-                }
-                return true;
-            }
-        }
-
-        return true;
-    }
-
-    /**
-     * @param int $pId
-     */
-    protected function saveProcess($pId)
-    {
-        $procFile = $this->procPath.'/pid';
-        if (file_exists($procFile)) {
-            $procs = file_get_contents($procFile);
-            file_put_contents($procFile, "$procs\n$pId");
-        } else {
-            file_put_contents($procFile, $pId);
-        }
-    }
-
-    protected function clearProcess($pId)
-    {
-        $procFile = $this->procPath.'/pid';
-        if (file_exists($procFile)) {
-            $procs = explode("\n", trim(file_get_contents($procFile)));
-            if ($key = array_search($pId, $procs)) {
-                unset($procs[$key]);
-            }
-            file_put_contents($procFile, implode("\n", $procs));
         }
     }
 }

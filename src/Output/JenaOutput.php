@@ -8,6 +8,7 @@
  * Thanks :)
  */
 namespace Output;
+use Interfaces\InputInterface;
 use Model\OutputData;
 use Model\OutputService;
 
@@ -27,6 +28,11 @@ class JenaOutput extends AbstractOutput
     {
         $query = $this->buildQuery($data);
         $this->execute($query);
+    }
+
+    public function fetchData(InputInterface $input)
+    {
+        return [];
     }
 
     /**

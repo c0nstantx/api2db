@@ -19,11 +19,11 @@ use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
 /**
- * Description of ImportCommand
+ * Description of NERInputParseCommand
  *
  * @author Konstantine Christofilos <kostas.christofilos@gmail.com>
  */
-class ImportCommand extends BaseCommand
+class NERInputParseCommand extends BaseCommand
 {
     /** @var InputService */
     protected $inputService;
@@ -33,7 +33,7 @@ class ImportCommand extends BaseCommand
     
     /** @var NERService */
     protected $NERService;
-    
+
     /** @var array */
     protected $outputs;
     
@@ -47,57 +47,51 @@ class ImportCommand extends BaseCommand
         $this->inputService = $inputService;
         $this->outputService = $outputService;
         $this->NERService = $NERService;
-        $this->logger = $logger;
         $this->outputs = $outputs;
     }
 
     protected function configure()
     {
-        $this->setName("api2db:import:endpoint")
-            ->addOption('endpoint', null, InputOption::VALUE_REQUIRED, 'The requested endpoint data as JSON string')
+        $this->setName("api2db:ner:parse_input")
             ->addOption('debug', null, InputOption::VALUE_NONE, 'Display and log debug information')
-            ->addOption('disable-ner', null, InputOption::VALUE_NONE, 'Disable NER parsing')
             ->addArgument('input', InputArgument::REQUIRED, 'The name of input (ex. twitter, facebook etc.)')
-            ->setDescription("Import names to input endpoints");
-        
+            ->setDescription("Parse single input data through NER");
     }
 
-    /**
-     * @param InputInterface $input
-     * @param OutputInterface $output
-     */
-    public function execute(InputInterface $consoleInput, OutputInterface $consoleOutput)
+    protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $this->debug = (bool)$consoleInput->getOption('debug');
+        $this->debug = (bool)$input->getOption('debug');
+
         try {
-            /* Get all outputs */
-            $outputs = $this->outputService->getOutputs(array_keys($this->outputs));
-
-
-            $inputName = $consoleInput->getArgument('input');
-            $endpoint = json_decode($consoleInput->getOption('endpoint'), true);
-
-            $inputDriver = $this->inputService->getInput($inputName);
-            $rawData = $inputDriver->get($endpoint['url'], [], []);
-            $inputData = [
-                'raw' => $rawData,
-                'endpoint' => $endpoint
-            ];
-
-            $disableNER = (bool)$consoleInput->getOption('disable-ner');
-            foreach($outputs as $output) {
-                $data = $this->outputService->getDataAdapter($output, $inputData);
-                if (!$disableNER) {
-                    $entities = $this->NERService->getEntities($data);
-                    $data->setEntities($entities);
-                }
-                $output->send($data);
-            }
+            $in = $this->inputService->getInput($input->getArgument('input'));
+            $this->parseData($in);
         } catch (\Exception $ex) {
             if ($this->debug) {
-                $consoleOutput->writeln("ERROR: ".$ex->getMessage());
+                $output->writeln("ERROR: ".$ex->getMessage());
             }
             $this->logger->critical($ex);
         }
     }
+
+    /**
+     * @param \Interfaces\InputInterface $input
+     */
+    protected function parseData(\Interfaces\InputInterface $input)
+    {
+        $outputs = $this->outputService->getOutputs(array_keys($this->outputs));
+        foreach($outputs as $output) {
+            $data = $output->fetchData($input);
+            if (is_array($data) && isset($data['owner'])) {
+                foreach($data['owner'] as $key => $owner) {
+                    $owner['map'] = $input->getDefaultMap();
+                    $owner['id'] = $input->getDefaultId();
+                    $reconstuctedData = $output->reconstructData($owner, $data['input'][$key]);
+                    $entities = $this->NERService->getEntities($reconstuctedData);
+                    $reconstuctedData->setEntities($entities);
+                    $output->send($reconstuctedData);
+                }
+            }
+        }
+    }
+
 }

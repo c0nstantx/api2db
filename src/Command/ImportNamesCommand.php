@@ -11,7 +11,6 @@
 namespace Command;
 use Model\ImporterService;
 use Monolog\Logger;
-use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
@@ -23,20 +22,14 @@ use Symfony\Component\Filesystem\Exception\FileNotFoundException;
  *
  * @author Konstantine Christofilos <kostas.christofilos@gmail.com>
  */
-class ImportNamesCommand extends Command
+class ImportNamesCommand extends BaseCommand
 {
     /** @var ImporterService */
     protected $importerService;
-
-    /** @var Logger */
-    protected $logger;
-
-    /** @var bool */
-    protected $debug;
     
     public function __construct(ImporterService $importerService, Logger $logger)
     {
-        parent::__construct();
+        parent::__construct($logger);
         $this->importerService = $importerService;
         $this->logger = $logger;
     }
@@ -95,31 +88,5 @@ class ImportNamesCommand extends Command
         } else {
             throw new \RuntimeException("Error reading '$filename'. Please check that the file exists and you have the proper privileges.");
         }
-    }
-
-    /**
-     * @param float $from
-     *
-     * @return string
-     */
-    protected function getTimeElapsed($from)
-    {
-        $seconds = round(microtime(true) - $from);
-
-        $days = floor($seconds / (3600 * 24));
-        $hours = floor($seconds / 3600 % 24);
-        if ($hours < 10) {
-            $hours = "0$hours";
-        }
-        $mins = floor($seconds / 60 % 60);
-        if ($mins < 10) {
-            $mins = "0$mins";
-        }
-        $secs = floor($seconds % 60);
-        if ($secs < 10) {
-            $secs = "0$secs";
-        }
-
-        return "$days days, $hours:$mins:$secs";
     }
 }

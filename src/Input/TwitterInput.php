@@ -50,4 +50,21 @@ class TwitterInput extends Oauth1Input
     {
         return 'twitter';
     }
+
+    public function getType()
+    {
+        return 'tweet';
+    }
+    
+    public function getDefaultMap()
+    {
+        return [
+            'text'
+        ];
+    }
+    
+    public function getDefaultId()
+    {
+        return 'id_str';
+    }
 }

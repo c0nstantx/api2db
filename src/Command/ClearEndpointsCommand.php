@@ -11,7 +11,6 @@
 namespace Command;
 use Model\ImporterService;
 use Monolog\Logger;
-use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -22,20 +21,14 @@ use Symfony\Component\Console\Question\ConfirmationQuestion;
  *
  * @author Konstantine Christofilos <kostas.christofilos@gmail.com>
  */
-class ClearEndpointsCommand extends Command
+class ClearEndpointsCommand extends BaseCommand
 {
     /** @var ImporterService */
     protected $importerService;
-
-    /** @var Logger */
-    protected $logger;
-
-    /** @var bool */
-    protected $debug;
     
     public function __construct(ImporterService $importerService, Logger $logger)
     {
-        parent::__construct();
+        parent::__construct($logger);
         $this->importerService = $importerService;
         $this->logger = $logger;
     }
