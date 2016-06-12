@@ -22,3 +22,5 @@ outputs:
     neo4j:
         host: neo_host
         port: 7474
+parameters:
+    ner_path: '/path/to/ner'

@@ -43,7 +43,7 @@ class JenaOutput extends AbstractOutput
             $data = $this->processData($transformedData);
             $query .= "PREFIX subjects_ns: <http://custom/ns/subjects#>\nPREFIX relation_ns: <http://custom/ns/relations#>\nPREFIX object_ns: <http://custom/ns/objects#>\nINSERT DATA { \n";
             foreach ($data as $pData) {
-                $object = $pData['object']['type'] === 'object' ? 'object_ns:'.$this->canonicalize($pData['object']['value']) : "'".$this->stripNewLines($pData['object']['value'])."'";
+                $object = $pData['object']['type'] === 'object' ? 'object_ns:'.$this->canonicalize($pData['object']['value']) : "'".$this->stripSpecialChars($pData['object']['value'])."'";
                 $subject = $this->canonicalize($pData['subject']);
                 $query .= "\tsubjects_ns:$subject relation_ns:{$pData['predicate']} $object. \n";
             }
@@ -150,7 +150,7 @@ class JenaOutput extends AbstractOutput
      */
     protected function sanitize($content)
     {
-        $content = $this->stripNewLines($content);
+        $content = $this->stripSpecialChars($content);
         $content = preg_replace("/[^A-Za-z0-9 ]/", '', $content);
 
         return $content;
@@ -161,8 +161,12 @@ class JenaOutput extends AbstractOutput
      *
      * @return string
      */
-    protected function stripNewLines($content)
+    protected function stripSpecialChars($content)
     {
-        return str_replace("\n", "", $content);
+        $content = str_replace("\n", "", $content);
+        $content = str_replace("\r", "", $content);
+        $content = str_replace("\t", "", $content);
+
+        return $content;
     }
 }
