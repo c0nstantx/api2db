@@ -33,9 +33,15 @@ class InputController
     {
         $endpoints = $app['input_service']->getInputMap($driver);
 
+        if (isset($endpoints['manual'])) {
+            $manualEndpoints = $endpoints['manual'];
+        } else {
+            $manualEndpoints = [];
+        }
+
         return $app['twig']->render('input/endpoints.html.twig', [
             'driver' => $driver,
-            'endpoints' => $endpoints
+            'endpoints' => $manualEndpoints
         ]);
     }
 
