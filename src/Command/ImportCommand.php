@@ -65,7 +65,7 @@ class ImportCommand extends Command
             ->addOption('debug', null, InputOption::VALUE_NONE, 'Display and log debug information')
             ->addOption('disable-ner', null, InputOption::VALUE_NONE, 'Disable NER parsing')
             ->addArgument('input', InputArgument::REQUIRED, 'The name of input (ex. twitter, facebook etc.)')
-            ->setDescription("Import names to input endpoints");
+            ->setDescription("Import data from a single input endpoint ");
         
     }
 

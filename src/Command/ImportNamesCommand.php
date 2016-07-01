@@ -47,7 +47,7 @@ class ImportNamesCommand extends Command
             ->addOption('update', null, InputOption::VALUE_NONE, 'Update the imported endpoints if the same is found')
             ->addOption('debug', null, InputOption::VALUE_NONE, 'Display and log debug information')
             ->addArgument('file', InputArgument::REQUIRED, 'The file location with a list of names (one name per line)')
-            ->setDescription("Import names to input endpoints");
+            ->setDescription("Import batch of names to input endpoints");
     }
 
     /**
